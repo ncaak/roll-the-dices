@@ -1,12 +1,27 @@
 package server
 
 import (
-    "fmt"
+    "net/http"
+    "log"
 )
 
-var certificatePath = "certs/cert.pem"
-var privateKeyPath = "certs/private.key"
+const certificatePath = "certs/cert.pem"
+const privateKeyPath = "certs/private.key"
 
-func Test() {
-    fmt.Println("it's working!")
+var port string
+var endpoint string
+
+type callback func (w http.ResponseWriter, r *http.Request)
+
+func Listen(url string, urlPort string) {
+    endpoint = url
+    port = urlPort
+}
+
+func Run(handler callback) {
+    http.HandleFunc("/" + endpoint, handler)
+    err := http.ListenAndServe(":" + port, nil)
+    if err != nil {
+        log.Fatal("Fatal error:  ", err)
+    }
 }

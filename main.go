@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"log"
-	"io/ioutil"
+	//"io/ioutil"
 	"github.com/ncaak/roll-the-dices/lib"
 )
 
@@ -19,14 +19,7 @@ func main() {
 	// 	log.Fatal("no data", err)
 	// }
 
-	server.Test()
-
-	log.Print(string(data))
-
-	// Creates a simple web server
-	http.HandleFunc("/token", tokenListener)
-	err := http.ListenAndServe(":9999", nil)
-	if err != nil {
-		log.Fatal("oooops: ", err)
-	}
+	server.Listen("arg", "12345")
+	server.Run(tokenListener)
+   
 }
