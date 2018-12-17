@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"log"
 	"io/ioutil"
+	"github.com/ncaak/roll-the-dices/lib"
 )
 
 func tokenListener(w http.ResponseWriter, r *http.Request) {
@@ -13,10 +14,12 @@ func tokenListener(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Recover certificate and private key for HTTPS server
-	data, err := ioutil.ReadFile("certs/cert.pem")
-	if err != nil {
-		log.Fatal("no data", err)
-	}
+	// data, err := ioutil.ReadFile("certs/cert.pem")
+	// if err != nil {
+	// 	log.Fatal("no data", err)
+	// }
+
+	server.Test()
 
 	log.Print(string(data))
 
