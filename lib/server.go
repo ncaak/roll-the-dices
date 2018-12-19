@@ -31,6 +31,7 @@ func Run(handler callback) {
     http.HandleFunc(endpoint, handler)
     //err := http.ListenAndServe(port, nil)
 	err := http.ListenAndServeTLS(port, certificatePath, privateKeyPath, nil)
+    err := http.ListenAndServeTLS(port, certificatePath, privateKeyPath, nil)
     if err != nil {
         log.Fatal("Fatal error:  ", err)
     }
