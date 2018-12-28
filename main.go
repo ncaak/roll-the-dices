@@ -10,10 +10,14 @@ import (
 	"fmt"
 )
 
-func getUpdates(id string) []update.Result {
-	var url = fmt.Sprintf("https://api.telegram.org/bot%s/%s", config.GetToken(), "getUpdates")
+func getUpdates(offset int) []update.Result {
+//	var url = fmt.Sprintf("https://api.telegram.org/bot%s/%s", config.GetToken(), "getUpdates")
 	
-	resp, err := http.Get(url)
+	resp, err := http.Get(fmt.Sprintf(
+		"https://api.telegram.org/bot%s/getUpdates?offset=%d",
+		config.GetToken(),
+		offset + 1,
+	))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -32,9 +36,9 @@ func getUpdates(id string) []update.Result {
 func main() {
 	log.Println("beginning routine")
 
-	var lastUpdateId = storage.GetLastUpdateId()
+	var offset = storage.GetUpdateOffset()
 
-	log.Print(getUpdates(lastUpdateId))
+	log.Print(getUpdates(offset))
 
 	storage.Close()
 

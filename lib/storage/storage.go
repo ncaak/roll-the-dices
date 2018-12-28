@@ -2,29 +2,30 @@ package storage
 
 import (
 	"github.com/ncaak/roll-the-dices/lib/config"
-	"log"
+	"fmt"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const tbUpdates = "Updates"
+
 var database *sql.DB
 
 func connect() {
-	log.Println("New connection to database")
-	var userPass = config.GetDbKey()
+	fmt.Println("New connection to database")
 
-	db, err := sql.Open("mysql", userPass + "@/pifiabot")
+	db, err := sql.Open("mysql", config.GetDbKey() + "@/pifiabot")
 	if err != nil {
 		panic(err.Error())
 	}
 	
-	log.Println("Connection to database successful")
+	fmt.Println("Connection to database successful")
 	database = db
 }
 
 func Close() {
 	defer database.Close()
-	log.Println("Connection to database closed")
+	fmt.Println("Connection to database closed")
 }
 
 func query(queryString string) *sql.Rows {
@@ -40,17 +41,17 @@ func query(queryString string) *sql.Rows {
 	return rows
 }
 
-func GetLastUpdateId() string {
-	var results = query("SELECT * FROM telegram")
+func GetUpdateOffset() int {
+	var results = query(fmt.Sprintf("SELECT * FROM %s", tbUpdates))
 
-	var lastId string
+	var offset int
 	for results.Next() {
-		results.Scan(&lastId)
+		results.Scan(&offset)
 	}
-
-	return lastId
+	
+	return offset
 }
 
 func SetLastUpdateId(updateId string) {
-	query("UPDATE telegram SET offset=" + updateId)
+	query(fmt.Sprintf("UPDATE %s SET offset=%s", tbUpdates, updateId))
 }
