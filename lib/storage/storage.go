@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const credentialsPath = "certs/dbCredentials"
+const credentialsPath = "config/dbCredentials"
 
 var database *sql.DB
 
