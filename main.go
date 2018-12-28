@@ -1,28 +1,17 @@
 package main
 
 import (
+	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"github.com/ncaak/roll-the-dices/structs/update"
 	"net/http"
-	"io/ioutil"
 	"encoding/json"
-	"strings"
 	"log"
 	"fmt"
 )
 
-var baseUrl = "https://api.telegram.org/bot%s/%s"
-
-func getConfig(fileName string) string {
-	data, err := ioutil.ReadFile("config/" + fileName)
-	if err != nil {
-		panic(err.Error())
-	}
-	return strings.TrimSuffix(string(data), "\n")
-}
-
 func getUpdates(id string) []update.Result {
-	var url = fmt.Sprintf(baseUrl, getConfig("token"), "getUpdates")
+	var url = fmt.Sprintf("https://api.telegram.org/bot%s/%s", config.GetToken(), "getUpdates")
 	
 	resp, err := http.Get(url)
 	if err != nil {

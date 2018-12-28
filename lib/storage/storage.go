@@ -1,28 +1,17 @@
 package storage
 
 import (
+	"github.com/ncaak/roll-the-dices/lib/config"
 	"log"
-	"io/ioutil"
-	"strings"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const credentialsPath = "config/dbCredentials"
-
 var database *sql.DB
-
-func getFileInfo(filePath string) string {
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		log.Fatal("Failure to read file", err)
-	}
-	return strings.TrimSuffix(string(data), "\n")
-}
 
 func connect() {
 	log.Println("New connection to database")
-	var userPass = getFileInfo(credentialsPath)
+	var userPass = config.GetDbKey()
 
 	db, err := sql.Open("mysql", userPass + "@/pifiabot")
 	if err != nil {
