@@ -1,4 +1,4 @@
-package response
+package update
 
 
 type Chat struct {
@@ -38,7 +38,7 @@ type Result struct {
 	UpdateId int	`json:"update_id"`
 }
 
-type Response struct {
+type Update struct {
 	Ok bool			`json:"ok"`
 	Result []Result	`json:"result"`
 }
