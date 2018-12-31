@@ -43,3 +43,10 @@ type Update struct {
 	Result []Result	`json:"result"`
 }
 
+func (result *Result) IsCommand() bool {
+	var command = false
+	if ent := result.Message.Entities; len(ent) > 0 && ent[0].Type == "bot_command"{
+		command = true
+	}
+	return command
+}
