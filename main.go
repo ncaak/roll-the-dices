@@ -27,12 +27,17 @@ func main() {
 			if len(rollCmd) > 0 {
 				var rollString = rollCmd[len(rollCmd)-1]
 				reply = dices.Roll(rollString)
+
+				conn.SendReply(msg.Message.From.Id, reply, msg.Message.MessageId)
 			}
-			
-			conn.SendReply(msg.Message.From.Id, reply, msg.Message.MessageId)
+
 		}
 	}
 
+	if len(messages) > 0 {
+		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
+		storage.SetLastUpdateId(newOffset)
+	}
 	storage.Close()
 
 	log.Println("ending routine")
