@@ -28,7 +28,7 @@ func main() {
 				var rollString = rollCmd[len(rollCmd)-1]
 				reply = dices.Roll(rollString)
 
-				conn.SendReply(msg.Message.From.Id, reply, msg.Message.MessageId)
+				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
 			}
 
 		}
