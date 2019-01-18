@@ -7,7 +7,10 @@ import (
 	"log"
 	"fmt"
 	"regexp"
+	"strings"
 )
+
+var acceptedCommands = [...]string{"tira","v","dv"}
 
 func main() {
 	log.Println("beginning routine")
@@ -16,27 +19,35 @@ func main() {
 	var messages = conn.GetUpdates(offset)
 
 	for _, msg := range messages {
-		fmt.Println(msg)
-		fmt.Println(msg.IsCommand())
 
 		if msg.IsCommand() == true {
-			var cmd = msg.Message.Text
-			var rollCmd = regexp.MustCompile(`\/tira (.*)`).FindStringSubmatch(cmd)
+			var regexCommands = fmt.Sprintf("/(%s)(.*)", strings.Join(acceptedCommands[:], "|"))
+			var command = regexp.MustCompile(regexCommands).FindStringSubmatch(msg.GetCommand())
 			var reply string
 
-			if len(rollCmd) > 0 {
-				var rollString = rollCmd[len(rollCmd)-1]
-				reply = dices.Roll(rollString)
+			if len(command) > 0 {
+				switch command[1] {
+				case acceptedCommands[0]:
+					reply = dices.Roll(strings.TrimSpace(command[2]))
 
-				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				case acceptedCommands[1]:
+					fmt.Println("Ventaja", command[2])
+
+				case acceptedCommands[2]:
+					fmt.Println("DesVentiaja", command[2])
+				}
+
+				//conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				fmt.Println("reply: ", reply)
 			}
 
 		}
 	}
 
 	if len(messages) > 0 {
-		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		storage.SetLastUpdateId(newOffset)
+		//var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
+		//storage.SetLastUpdateId(newOffset)
+		fmt.Println("debug mode active")
 	}
 	storage.Close()
 

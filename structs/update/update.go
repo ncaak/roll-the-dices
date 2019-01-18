@@ -50,3 +50,15 @@ func (result *Result) IsCommand() bool {
 	}
 	return command
 }
+
+func (result *Result) GetCommand() string {
+	return result.Message.Text;
+}
+
+func (result *Result) GetChatId() int {
+	return result.Message.Chat.Id;
+}
+
+func (result *Result) GetReplyId() int {
+	return result.Message.MessageId;
+}
