@@ -56,7 +56,7 @@ func calcBonus() {
 }
 
 func tag() {
-	reply = fmt.Sprintf("%s:%s", strings.TrimSpace(roll), reply)
+	reply = fmt.Sprintf("%s: %s", strings.TrimSpace(roll), strings.TrimSpace(reply))
 }
 
 func Roll(command string) string {
@@ -82,18 +82,64 @@ func Roll(command string) string {
 	return reply
 }
 
-
 func Advantage(command string) string {
 	fmt.Println("advantage: ", command)
 	var rollValues []int
-
+	
+	reset(command)
+	
 	rand.Seed(time.Now().UnixNano())
 	for rolls := 0; rolls < 2; rolls++ {
 		rollValues = append(rollValues, rand.Intn(20)+1)
 	}
 
-	fmt.Println(rollValues)
+	if rollValues[0] > rollValues[1] {
+		total = rollValues[0]
+	} else {
+		total = rollValues[1]
+	}
+	reply = fmt.Sprintf("2d20%d", rollValues)
 
-	return ""
+	if roll != "" {
+		calcBonus()
+	}
+
+	if roll != "" {
+		tag()
+	}
+
+	reply = fmt.Sprintf("%s = %d", reply, total)
+
+	return reply
 }
 
+func Disadvantage(command string) string {
+	fmt.Println("disadvantage: ", command)
+	var rollValues []int
+	
+	reset(command)
+	
+	rand.Seed(time.Now().UnixNano())
+	for rolls := 0; rolls < 2; rolls++ {
+		rollValues = append(rollValues, rand.Intn(20)+1)
+	}
+
+	if rollValues[0] < rollValues[1] {
+		total = rollValues[0]
+	} else {
+		total = rollValues[1]
+	}
+	reply = fmt.Sprintf("2d20%d", rollValues)
+
+	if roll != "" {
+		calcBonus()
+	}
+
+	if roll != "" {
+		tag()
+	}
+
+	reply = fmt.Sprintf("%s = %d", reply, total)
+
+	return reply
+}

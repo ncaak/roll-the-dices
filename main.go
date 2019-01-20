@@ -35,7 +35,7 @@ func main() {
 					reply = dices.Advantage(argument)
 
 				case acceptedCommands[2]:
-					fmt.Println("DesVentiaja", command[2])
+					reply = dices.Disadvantage(argument)
 				}
 
 				//conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
