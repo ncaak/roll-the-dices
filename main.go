@@ -26,12 +26,13 @@ func main() {
 			var reply string
 
 			if len(command) > 0 {
+				var argument = strings.TrimSpace(command[2])
 				switch command[1] {
 				case acceptedCommands[0]:
-					reply = dices.Roll(strings.TrimSpace(command[2]))
+					reply = dices.Roll(argument)
 
 				case acceptedCommands[1]:
-					fmt.Println("Ventaja", command[2])
+					reply = dices.Advantage(argument)
 
 				case acceptedCommands[2]:
 					fmt.Println("DesVentiaja", command[2])

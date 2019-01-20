@@ -9,14 +9,19 @@ import (
 	"strings"
 )
 
+var reply string
+var roll string
+var total int
 
-func Roll(roll string) string {
-	fmt.Println("tirada: ", roll)
-	
+func reset(command string) {
+	reply = ""
+	roll = command
+	total = 0
+}
+
+func calcDices() {
 	var regexDices = regexp.MustCompile(`([+|-])?(\d)d(\d+)`)
-	var total int
-	var reply string
-	
+
 	for _, match := range regexDices.FindAllStringSubmatch(roll, -1) {
 		var rollValues []string
 		var dices, _ = strconv.Atoi(match[len(match)-2])
@@ -36,28 +41,59 @@ func Roll(roll string) string {
 		reply = fmt.Sprintf("%s %s%s", reply, match[0], rollValues)
 		roll = strings.Replace(roll, match[0], "", 1)
 	}
+}
 
+func calcBonus() {
+	var regexBonus = regexp.MustCompile(`([+|-])?(\d+)`)
 	
+	for _, match := range regexBonus.FindAllStringSubmatch(roll, -1) {
+		bonus, _ := strconv.Atoi(match[0])
+		total += bonus
+
+		reply = fmt.Sprintf("%s %s", reply, match[0])
+		roll = strings.Replace(roll, match[0], "", 1)
+	}
+}
+
+func tag() {
+	reply = fmt.Sprintf("%s:%s", strings.TrimSpace(roll), reply)
+}
+
+func Roll(command string) string {
+	fmt.Println("roll: ", command)
+	if command != "" {
+		reset(command)
+	} else {
+		reset("1d20")
+	}
+
+	calcDices()
 
 	if roll != "" {
-		var regexBonus = regexp.MustCompile(`([+|-])?(\d+)`)
-
-		for _, match := range regexBonus.FindAllStringSubmatch(roll, -1) {
-			fmt.Println("bonus: ", match[0])
-			bonus, _ := strconv.Atoi(match[0])
-			total += bonus
-
-			reply = fmt.Sprintf("%s %s", reply, match[0])
-			roll = strings.Replace(roll, match[0], "", 1)
-		}
-
+		calcBonus()
 	}
 
 	if roll != "" {
-		reply = fmt.Sprintf("%s:%s", strings.TrimSpace(roll), reply)
+		tag()
 	}
 			
 	reply = fmt.Sprintf("%s = %d", reply, total)
-
+	
 	return reply
 }
+
+
+func Advantage(command string) string {
+	fmt.Println("advantage: ", command)
+	var rollValues []int
+
+	rand.Seed(time.Now().UnixNano())
+	for rolls := 0; rolls < 2; rolls++ {
+		rollValues = append(rollValues, rand.Intn(20)+1)
+	}
+
+	fmt.Println(rollValues)
+
+	return ""
+}
+
