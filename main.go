@@ -38,16 +38,16 @@ func main() {
 					reply = dices.Disadvantage(argument)
 				}
 
-				//conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
-				fmt.Println("reply: ", reply)
+				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				//fmt.Println("reply: ", reply)
 			}
 
 		}
 	}
 
 	if len(messages) > 0 {
-		//var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		//storage.SetLastUpdateId(newOffset)
+		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
+		storage.SetLastUpdateId(newOffset)
 		fmt.Println("debug mode active")
 	}
 	storage.Close()

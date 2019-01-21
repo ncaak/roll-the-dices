@@ -60,7 +60,7 @@ func tag() {
 }
 
 func Roll(command string) string {
-	fmt.Println("roll: ", command)
+	//fmt.Println("roll: ", command)
 	if command != "" {
 		reset(command)
 	} else {
@@ -83,7 +83,7 @@ func Roll(command string) string {
 }
 
 func Advantage(command string) string {
-	fmt.Println("advantage: ", command)
+	//fmt.Println("advantage: ", command)
 	var rollValues []int
 	
 	reset(command)
@@ -114,7 +114,7 @@ func Advantage(command string) string {
 }
 
 func Disadvantage(command string) string {
-	fmt.Println("disadvantage: ", command)
+	//fmt.Println("disadvantage: ", command)
 	var rollValues []int
 	
 	reset(command)
