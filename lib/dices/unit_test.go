@@ -3,12 +3,15 @@ package dices
 import (
 	"fmt"
 	"testing"
+	"strings"
 )
 
 // Combination of values die-face
 type diceMatrix [][2]int
 
-// Auxiliary function to sum up slice values
+// --- Auxiliary functions ---
+
+// Sum up slice values iterating through the slice
 func sliceSum(slice []int) (total int) {
 	for _, item := range slice {
 		total += item
@@ -123,3 +126,34 @@ func TestBonusMultiple(t *testing.T) {
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{7,-3})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
+
+// Test tagged roll
+// Minimum value 1, Maximum value 20
+func TestTagBasic(t *testing.T) {
+	var test = "1d20 Initiative"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{})
+	if !strings.Contains(result, "Initiative") {
+		t.Error(fmt.Sprintf("ERROR :: Tag not found : Expected: 'Initiative: 1d20[x]= x', Got: '%s'", result))
+	}
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
+
+// Test tagged roll with bonus
+// Minimum value 8, Maximum value 27
+func TestTagMultiple(t *testing.T) {
+	var test = "1d20 +7 Initiative"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: 'Initiative: 1d20[d1]+7= d1' d1 = [8-27]")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{7})
+	if !strings.Contains(result, "Initiative") {
+		t.Error(fmt.Sprintf("ERROR :: Tag not found : Expected: 'Initiative: 1d20[x]+7= y', Got: '%s'", result))
+	}
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
+

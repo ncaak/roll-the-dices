@@ -90,6 +90,9 @@ func (r *Roller) extractFromCommand (usedOrder string) {
 // * Retrieves every bonus
 func (r *Roller) formatReply () string {
 	var fmtReply strings.Builder
+	if strings.TrimSpace(r.command) != "" {
+		fmtReply.WriteString(fmt.Sprintf("%s: ", strings.TrimSpace(r.command)))
+	}
 	// Finds every check and results to write it verbosely
 	for index, check := range r.checks {
 		// From the first item, following ones are included as a multiple roll
