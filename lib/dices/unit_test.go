@@ -54,7 +54,7 @@ func checkRoll(t *testing.T, r Roller, matrix diceMatrix, bonus []int) {
 
 // Test 1d20 roll
 // Minimum value: 1, Maximum value: 20
-func TestBasicRoll(t *testing.T) {
+func TestRollBasic(t *testing.T) {
 	var test = "1d20"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
@@ -66,7 +66,7 @@ func TestBasicRoll(t *testing.T) {
 
 // Test 2d20+1d6 roll
 // Minimum value: 3, Maximum value: 46
-func TestMultipleRoll(t *testing.T) {
+func TestRollMultiple(t *testing.T) {
 	var test = "2d20+1d6"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '2d20[d1 d2]+1d6[d3]= d4' (d4=d1+d2+d3)")
@@ -78,7 +78,7 @@ func TestMultipleRoll(t *testing.T) {
 
 // Test 2d20+1d10+1d6 roll
 // Minimum value: 4, Maximum value: 56
-func TestMultipleRollWhitespaces(t *testing.T) {
+func TestRollWhitespaces(t *testing.T) {
 	var test = "2d20 + 1d10 +1d6"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '2d20[d1 d2]+1d10[d3]+1d6[d4]= d5' (d5=d1+d2+d3+d4)")
@@ -88,15 +88,27 @@ func TestMultipleRollWhitespaces(t *testing.T) {
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
-// Test 1d20+5 roll
+// Test flat +5 bonus
 // Minimum value: 6, Maximum value: 25
-func TestBonusBasicRoll(t *testing.T) {
+func TestBonusBasic(t *testing.T) {
 	var test = "1d20+5"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
-	t.Log("Expected roll: '1d20[d1]+5= d2' d2 = [1-20]+5")
+	t.Log("Expected roll: '1d20[d1]+5= d2' d2 = [6-25]")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{5})
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
+
+// Test flat -3 bonus
+// Minimum value -1, Maximum value 17
+func TestBonusNegative(t *testing.T) {
+	var test = "2d10-3"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: '2d10[d1]-3= d2' d2 = [-1-17]")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{2,10}}, []int{-3})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
