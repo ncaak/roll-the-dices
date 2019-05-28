@@ -19,26 +19,30 @@ func reset(command string) {
 	total = 0
 }
 
+func rollDices(dices int, faces int) []int {
+	var rollValues []int
+	rand.Seed(time.Now().UnixNano())
+	for rolls := 0; rolls < dices; rolls++ {
+		rollValues = append(rollValues, rand.Intn(faces)+1)
+	}
+
+	return rollValues
+}
+
 func calcDices() {
 	var regexDices = regexp.MustCompile(`([+|-])?(\d)d(\d+)`)
 
 	for _, match := range regexDices.FindAllStringSubmatch(roll, -1) {
-		var rollValues []string
+		var rollValues []int
 		var dices, _ = strconv.Atoi(match[len(match)-2])
 		var faces, _ = strconv.Atoi(match[len(match)-1])
-
-		rand.Seed(time.Now().UnixNano())
-		for rolls := 0; rolls < dices; rolls++ {
-			result := rand.Intn(faces) +1
-			if match[1] == "-" {
-				result = result * -1
-			}
-
-			total += result
-			rollValues = append(rollValues, strconv.Itoa(result))
-		}
 		
-		reply = fmt.Sprintf("%s %s%s", reply, match[0], rollValues)
+		rollValues = rollDices(dices, faces)
+		for _, value := range rollValues {
+			total += value
+		}
+
+		reply = fmt.Sprintf("%s %s%d", reply, match[0], rollValues)
 		roll = strings.Replace(roll, match[0], "", 1)
 	}
 }
@@ -67,7 +71,9 @@ func Roll(command string) string {
 		reset("1d20")
 	}
 
-	calcDices()
+	if roll != "" {
+		calcDices()
+	}
 
 	if roll != "" {
 		calcBonus()
@@ -88,18 +94,19 @@ func Advantage(command string) string {
 	
 	reset(command)
 	
-	rand.Seed(time.Now().UnixNano())
-	for rolls := 0; rolls < 2; rolls++ {
-		rollValues = append(rollValues, rand.Intn(20)+1)
-	}
-
+	rollValues = rollDices(2,20)	
 	if rollValues[0] > rollValues[1] {
 		total = rollValues[0]
 	} else {
 		total = rollValues[1]
 	}
+
 	reply = fmt.Sprintf("2d20%d", rollValues)
 
+	if roll != "" {
+		calcDices()
+	}
+	
 	if roll != "" {
 		calcBonus()
 	}
