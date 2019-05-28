@@ -27,18 +27,24 @@ func Resolve(command string) (string, Roller) {
 
 	r.extractDice()
 
-	r.extractModifiers()
+	r.extractBonus()
 
 	r.calcTotal()
 
 	return r.formatReply(), r
 }
 
+// Sums up every roll made with dices and modifier included as a bonus (negative or positive)
 func (r *Roller) calcTotal () {
+	// Searches for every result of every check
 	for _, check := range r.checks {
 		for _, result := range check.results {
 			r.total += result
 		}
+	}
+	// Searches for every bonus
+	for _, mod := range r.bonus {
+		r.total += mod
 	}
 }
 
@@ -53,7 +59,7 @@ func (r *Roller) extractDice () {
 	}
 }
 
-func (r *Roller) extractModifiers () {
+func (r *Roller) extractBonus () {
 	var regexBonus = regexp.MustCompile(`(\s?[+|-]\s?)(\d+)`)
 
 	for _, match := range regexBonus.FindAllStringSubmatch(r.command, -1) {
@@ -68,16 +74,27 @@ func (r *Roller) extractFromCommand (usedOrder string) {
 	r.command = strings.Replace(r.command, usedOrder, "", 1)
 }
 
+// Generates a String with a verbose result of the roll
+// * Retrieves every result of every check done
+// * Retrieves every bonus
 func (r *Roller) formatReply () string {
 	var fmtReply strings.Builder
+	// Finds every check and results to write it verbosely
 	for index, check := range r.checks {
-		var str = fmt.Sprintf("%dd%d%d", check.dice, check.faces, check.results)
 		if index > 0 {
 			fmtReply.WriteString("+")
 		}
-		fmtReply.WriteString(str)
+		fmtReply.WriteString(fmt.Sprintf("%dd%d%d", check.dice, check.faces, check.results))
+
 	}
-	
+	// Finds every bonus and writes it after the dice
+	for _, bonus := range r.bonus {
+		if bonus > 0 {
+			fmtReply.WriteString("+")
+		}
+		fmtReply.WriteString(fmt.Sprintf("%d", bonus))
+	}
+	// Append equals symbol and the total sum of the roll
 	fmtReply.WriteString(fmt.Sprintf("= %d", r.total))
 
 	return fmtReply.String()

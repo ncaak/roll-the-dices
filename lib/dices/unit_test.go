@@ -21,7 +21,7 @@ func sliceSum(slice []int) (total int) {
 // * the correct faces number for the die
 // * the dice results are inbounds
 // * the total sum of each result
-func checkRoll(t *testing.T, r Roller, matrix diceMatrix) {
+func checkRoll(t *testing.T, r Roller, matrix diceMatrix, bonus []int) {
 	var checkTotal int
 
 	for i, item := range r.checks {
@@ -35,13 +35,17 @@ func checkRoll(t *testing.T, r Roller, matrix diceMatrix) {
 			t.Error(fmt.Sprintf("ERROR :: Wrong number of die faces : Expected: %d, Got: %d", faces, item.faces))
 		// Checks the value of the check result is between possible minimum and maximum
 		} else if checkSum < dice || checkSum > (dice * faces) {
-			t.Error(fmt.Sprintf("ERROR :: Result outbounds dice possible values : Expected: %d-%d, Got: %d", dice, faces, checkSum))
-
+			t.Error(fmt.Sprintf(
+				"ERROR :: Result outbounds dice possible values : Expected: %d-%d, Got: %d",
+				dice,
+				dice * faces,
+				checkSum,
+			))
 		}
 		checkTotal += checkSum
 	}
 	// Checks that check total coincides with check results sum
-	if checkTotal != r.total {
+	if checkTotal + sliceSum(bonus) != r.total {
 		t.Error(fmt.Sprintf("ERROR :: Wrong check total : Expected: %d, Got: %d", checkTotal, r.total))
 	}
 }
@@ -56,7 +60,7 @@ func TestBasicRoll(t *testing.T) {
 	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{1,20}})
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
@@ -68,7 +72,7 @@ func TestMultipleRoll(t *testing.T) {
 	t.Log("Expected roll: '2d20[d1 d2]+1d6[d3]= d4' (d4=d1+d2+d3)")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20},{1,6}})
+	checkRoll(t, roller, diceMatrix{{2,20},{1,6}}, []int{})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
@@ -80,7 +84,7 @@ func TestMultipleRollWhitespaces(t *testing.T) {
 	t.Log("Expected roll: '2d20[d1 d2]+1d10[d3]+1d6[d4]= d5' (d5=d1+d2+d3+d4)")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20},{1,10},{1,6}})
+	checkRoll(t, roller, diceMatrix{{2,20},{1,10},{1,6}}, []int{})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
@@ -91,9 +95,8 @@ func TestBonusBasicRoll(t *testing.T) {
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '1d20[d1]+5= d2' d2 = [1-20]+5")
 	var result, roller = Resolve(test)
-	t.Log(roller)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{1,20}})
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{5})
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
