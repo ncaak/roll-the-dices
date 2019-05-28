@@ -112,3 +112,14 @@ func TestBonusNegative(t *testing.T) {
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
+// Test multiple bonus
+// Minimum value 5, Maximum value 24
+func TestBonusMultiple(t *testing.T) {
+	var test = "1d20 + 7 - 3"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: '1d20[d1]+7-3= d2' d2 = [5-24]")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{7,-3})
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
