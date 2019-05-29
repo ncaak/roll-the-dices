@@ -40,9 +40,7 @@ func Resolve(command string) (string, Roller) {
 func (r *Roller) calcTotal () {
 	// Searches for every result of every check
 	for _, check := range r.checks {
-		for _, result := range check.results {
-			r.total += result
-		}
+		r.total += check.total
 	}
 	// Searches for every bonus
 	for _, mod := range r.bonus {
@@ -52,13 +50,13 @@ func (r *Roller) calcTotal () {
 
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 func (r *Roller) extractDice () {
-	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>\d+[p,m])?(?P<dice>\d+)d(?P<faces>\d+)`)
+	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>[mp])?(?P<dice>\d+)d(?P<faces>\d+)`)
 
 	for _, match := range regexDices.FindAllStringSubmatch(r.command, -1) {
 		var roll = mapRoll(regexDices.SubexpNames(), match)
 		var dices, _ = strconv.Atoi(roll["dice"])
 		var faces, _ = strconv.Atoi(roll["faces"])
-		r.newCheck(dices, faces)
+		r.newCheck(dices, faces, roll["mod"])
 		r.extractFromCommand(roll["command"])
 	}
 }
@@ -130,18 +128,35 @@ func mapRoll (names []string, values []string) map[string]string {
 }
 
 // Generates results with given dices and die faces
-func (r *Roller) newCheck (dice int, faces int) {
-	var results, total = []int{}, 0
+func (r *Roller) newCheck (dice int, faces int, mod string) {
+	var results = []int{}
+	var total = 0
+	var action func(int, int) int
+	// Valid modifiers that can affect a roll:
+	// * m - Best die of the check
+	// * p - Lowest die of the check
+	switch mod {
+		case "m":
+			action = func(top int, value int) int {
+				if top < value {
+					top = value
+				}
+				return top
+			}
+
+		default:
+			action = func(subtotal int, value int) int { return subtotal + value }
+	}
+
 	for rolls := 0; rolls < dice; rolls++ {
 		// Generating new seed every execution
 		rand.Seed(time.Now().UnixNano())
 		// Minimum die value is 1, in randomizer is 0
 		var roll = rand.Intn(faces)+1
-		// Adding subtotal to add advantage and disadvantage rolls (roll 2 dice, take 1)
-		total += roll
+		// Retrieves the action value, by default is the sum of each value but can be modified
+		total = action(total, roll)
 		results = append(results, roll)
 	}
-
 	// new structure for each check
 	r.checks = append(r.checks, check{dice, faces, results, total})
 }
