@@ -13,6 +13,7 @@ type check struct {
 	dice int
 	faces int
 	results []int
+	total int
 }
 
 type Roller struct {
@@ -130,14 +131,17 @@ func mapRoll (names []string, values []string) map[string]string {
 
 // Generates results with given dices and die faces
 func (r *Roller) newCheck (dice int, faces int) {
-	// new structure for each check
-	var ch = check{dice, faces, []int{}}
-	// Generating new seed every execution
-	rand.Seed(time.Now().UnixNano())
+	var results, total = []int{}, 0
 	for rolls := 0; rolls < dice; rolls++ {
+		// Generating new seed every execution
+		rand.Seed(time.Now().UnixNano())
 		// Minimum die value is 1, in randomizer is 0
-		ch.results = append(ch.results, rand.Intn(faces)+1)
+		var roll = rand.Intn(faces)+1
+		// Adding subtotal to add advantage and disadvantage rolls (roll 2 dice, take 1)
+		total += roll
+		results = append(results, roll)
 	}
 
-	r.checks = append(r.checks, ch)
+	// new structure for each check
+	r.checks = append(r.checks, check{dice, faces, results, total})
 }
