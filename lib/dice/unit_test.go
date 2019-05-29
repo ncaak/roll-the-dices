@@ -22,11 +22,23 @@ func sliceSum() func([]int) int {
 }
 
 // Returns the higher value among the slice items
-func sliceTop() func([]int) int {
+func sliceHigher() func([]int) int {
 	return func(slice []int) (top int) {
 		for _, item := range slice {
 			if item > top {
 				top = item
+			}
+		}
+		return
+	}
+}
+
+// Returns the higher value among the slice items
+func sliceLower() func([]int) int {
+	return func(slice []int) (lower int) {
+		for _, item := range slice {
+			if lower > item || lower == 0 {
+				lower = item
 			}
 		}
 		return
@@ -50,11 +62,10 @@ func checkRoll(t *testing.T, r Roller, matrix diceMatrix, bonus []int, action fu
 		// Checks the die faces
 		} else if item.faces != faces {
 			t.Error(fmt.Sprintf("ERROR :: Wrong number of die faces : Expected: %d, Got: %d", faces, item.faces))
-		// Checks the value of the check result is between possible minimum and maximum
-		} else if checkSum < dice || checkSum > (dice * faces) {
+		// Checks the value of the check result is lesser than the maximum possible
+		} else if checkSum > (dice * faces) {
 			t.Error(fmt.Sprintf(
-				"ERROR :: Result outbounds dice possible values : Expected: %d-%d, Got: %d",
-				dice,
+				"ERROR :: Result outbounds dice maximum value : Expected: %d, Got: %d",
 				dice * faces,
 				checkSum,
 			))
@@ -174,23 +185,47 @@ func TestTagMultiple(t *testing.T) {
 // Test basic advantage roll
 // Minimum value 1, Maximum value 20
 func TestAdvantageBasic(t *testing.T) {
-	var test = "m2d20"
+	var test = "h2d20"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceTop())
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher())
 	t.Log(fmt.Sprintf("Result: %s", result))
 }
 
-// Test basic advantage roll
+// Test complex advantage roll
 // Minimum value 8, Maximum value 27
 func TestAdvantageBonus(t *testing.T) {
-	var test = "m2d20 + 7"
+	var test = "h2d20 + 7"
 	t.Log(fmt.Sprintf("Test roll: %s", test))
 	t.Log("Expected roll: '2d20[d1 d2]+7= d3' d3 = max(d1, d2)+7")
 	var result, roller = Resolve(test)
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20}}, []int{7}, sliceTop())
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{7}, sliceHigher())
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
+
+// Test basic disadvantage roll
+// Minimum value 1, Maximum value 20
+func TestDisadvantageBasic(t *testing.T) {
+	var test = "l2d20"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = min(d1, d2)")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceLower())
+	t.Log(fmt.Sprintf("Result: %s", result))
+}
+
+// Test complex disadvantage roll
+// Minimum value 7, Maximum value 26
+func TestDisadvantageBonus(t *testing.T) {
+	var test = "l2d20 +6"
+	t.Log(fmt.Sprintf("Test roll: %s", test))
+	t.Log("Expected roll: '2d20[d1 d2]+6= d3' d3 = min(d1, d2)+6")
+	var result, roller = Resolve(test)
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{6}, sliceLower())
 	t.Log(fmt.Sprintf("Result: %s", result))
 }

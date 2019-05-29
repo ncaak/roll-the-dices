@@ -50,7 +50,7 @@ func (r *Roller) calcTotal () {
 
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 func (r *Roller) extractDice () {
-	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>[mp])?(?P<dice>\d+)d(?P<faces>\d+)`)
+	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
 
 	for _, match := range regexDices.FindAllStringSubmatch(r.command, -1) {
 		var roll = mapRoll(regexDices.SubexpNames(), match)
@@ -133,15 +133,23 @@ func (r *Roller) newCheck (dice int, faces int, mod string) {
 	var total = 0
 	var action func(int, int) int
 	// Valid modifiers that can affect a roll:
-	// * m - Best die of the check
-	// * p - Lowest die of the check
+	// * h - Highest die of the check
+	// * l - Lowest die of the check
 	switch mod {
-		case "m":
+		case "h":
 			action = func(top int, value int) int {
 				if top < value {
 					top = value
 				}
 				return top
+			}
+
+		case "l":
+			action = func(lower int, value int) int {
+				if lower > value || lower == 0 {
+					lower = value
+				}
+				return lower
 			}
 
 		default:
