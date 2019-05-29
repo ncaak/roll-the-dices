@@ -51,16 +51,14 @@ func (r *Roller) calcTotal () {
 
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 func (r *Roller) extractDice () {
-	var regexDices = regexp.MustCompile(`(\s?\+?\s?)?(\d)d(\d+)`)
+	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>\d+[p,m])?(?P<dice>\d+)d(?P<faces>\d+)`)
 
 	for _, match := range regexDices.FindAllStringSubmatch(r.command, -1) {
-		// searches for the dice number and the faces with an inverse search as there could be
-		// a '+' symbol if the roll is contains multiple rolls
-		var dices, _ = strconv.Atoi(match[len(match)-2])
-		var faces, _ = strconv.Atoi(match[len(match)-1])
+		var roll = mapRoll(regexDices.SubexpNames(), match)
+		var dices, _ = strconv.Atoi(roll["dice"])
+		var faces, _ = strconv.Atoi(roll["faces"])
 		r.newCheck(dices, faces)
-		// index 0 gets the complete roll, including possible whitespaces between symbol and value
-		r.extractFromCommand(match[0])
+		r.extractFromCommand(roll["command"])
 	}
 }
 
@@ -115,6 +113,19 @@ func (r *Roller) formatReply () string {
 	fmtReply.WriteString(fmt.Sprintf("= %d", r.total))
 
 	return fmtReply.String()
+}
+
+// Mapping values extracted from regex that shares index
+func mapRoll (names []string, values []string) map[string]string {
+	var rolls = map[string]string{}
+	for i, value := range values {
+		if names[i] != "" {
+			rolls[names[i]] = value
+		} else {
+			rolls["command"] = value
+		}
+	}
+	return rolls
 }
 
 // Generates results with given dices and die faces
