@@ -1,4 +1,4 @@
-package dices
+package dice
 
 import (
 	"fmt"
