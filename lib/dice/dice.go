@@ -115,7 +115,7 @@ func (r *Roller) formatReply () string {
 }
 
 // Mapping values extracted from regex that shares index
-func mapRoll (names []string, values []string) map[string]string {
+func mapRoll(names []string, values []string) map[string]string {
 	var rolls = map[string]string{}
 	for i, value := range values {
 		if names[i] != "" {
@@ -131,30 +131,7 @@ func mapRoll (names []string, values []string) map[string]string {
 func (r *Roller) newCheck (dice int, faces int, mod string) {
 	var results = []int{}
 	var total = 0
-	var action func(int, int) int
-	// Valid modifiers that can affect a roll:
-	// * h - Highest die of the check
-	// * l - Lowest die of the check
-	switch mod {
-		case "h":
-			action = func(top int, value int) int {
-				if top < value {
-					top = value
-				}
-				return top
-			}
-
-		case "l":
-			action = func(lower int, value int) int {
-				if lower > value || lower == 0 {
-					lower = value
-				}
-				return lower
-			}
-
-		default:
-			action = func(subtotal int, value int) int { return subtotal + value }
-	}
+	var action = getCheckAction(mod)
 
 	for rolls := 0; rolls < dice; rolls++ {
 		// Generating new seed every execution
@@ -167,4 +144,30 @@ func (r *Roller) newCheck (dice int, faces int, mod string) {
 	}
 	// new structure for each check
 	r.checks = append(r.checks, check{dice, faces, results, total})
+}
+
+// Provides polymorphism to newCheck method, returning an action depending on the modifier
+// Valid modifiers that can affect a roll (h, l)
+func getCheckAction(modifier string) (action func(int, int) int) {
+	switch modifier {
+		case "h": // Higher roll on a check
+			action = func(top int, value int) int {
+				if top < value {
+					top = value
+				}
+				return top
+			}
+
+		case "l": // Lower roll on a check
+			action = func(lower int, value int) int {
+				if lower > value || lower == 0 {
+					lower = value
+				}
+				return lower
+			}
+
+		default: // default action is rolls sum
+			action = func(subtotal int, value int) int { return subtotal + value }
+	}
+	return
 }
