@@ -85,7 +85,7 @@ func TestRollBasic(t *testing.T) {
 	var test = "1d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{}, sliceSum())
 	t.Logf("Result: %s", result)
@@ -97,9 +97,21 @@ func TestRollMultiple(t *testing.T) {
 	var test = "2d20+1d6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+1d6[d3]= d4' (d4=d1+d2+d3)")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20},{1,6}}, []int{}, sliceSum())
+	t.Logf("Result: %s", result)
+}
+
+// Test default roll with no die
+// Minimum value: 1, Maximum value: 20
+func TestRollDefault(t *testing.T) {
+	var test = ""
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
+	var result, roller = Resolve(test, "1d20")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{}, sliceSum())
 	t.Logf("Result: %s", result)
 }
 
@@ -109,7 +121,7 @@ func TestRollWhitespaces(t *testing.T) {
 	var test = "2d20 + 1d10 +1d6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+1d10[d3]+1d6[d4]= d5' (d5=d1+d2+d3+d4)")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20},{1,10},{1,6}}, []int{}, sliceSum())
 	t.Logf("Result: %s", result)
@@ -121,7 +133,7 @@ func TestBonusBasic(t *testing.T) {
 	var test = "1d20+5"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]+5= d2' d2 = [6-25]")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{5}, sliceSum())
 	t.Logf("Result: %s", result)
@@ -133,7 +145,7 @@ func TestBonusNegative(t *testing.T) {
 	var test = "2d10-3"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d10[d1]-3= d2' d2 = [-1-17]")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,10}}, []int{-3}, sliceSum())
 	t.Logf("Result: %s", result)
@@ -145,9 +157,21 @@ func TestBonusMultiple(t *testing.T) {
 	var test = "1d20 + 7 - 3"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]+7-3= d2' d2 = [5-24]")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{7,-3}, sliceSum())
+	t.Logf("Result: %s", result)
+}
+
+// Test default bonus with no die
+// Minimum value 5, Maximum value 24
+func TestBonusDefault(t *testing.T) {
+	var test = "+4"
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: '1d20[d1]+4= d2' d2 = [5-24]")
+	var result, roller = Resolve(test, "1d20")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{4}, sliceSum())
 	t.Logf("Result: %s", result)
 }
 
@@ -157,7 +181,7 @@ func TestTagBasic(t *testing.T) {
 	var test = "1d20 Initiative"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{}, sliceSum())
 	if !strings.Contains(result, "Initiative") {
@@ -171,12 +195,27 @@ func TestTagBasic(t *testing.T) {
 func TestTagMultiple(t *testing.T) {
 	var test = "1d20 +7 Initiative"
 	t.Logf("Test roll: %s", test)
-	t.Log("Expected roll: 'Initiative: 1d20[d1]+7= d1' d1 = [8-27]")
-	var result, roller = Resolve(test)
+	t.Log("Expected roll: 'Initiative: 1d20[d1]+7= d2' d2 = [8-27]")
+	var result, roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1,20}}, []int{7}, sliceSum())
 	if !strings.Contains(result, "Initiative") {
 		t.Errorf("ERROR :: Tag not found : Expected: 'Initiative: 1d20[x]+7= y', Got: '%s'", result)
+	}
+	t.Logf("Result: %s", result)
+}
+
+// Test tagged roll with no die
+// Minimum value 1, Maximum value 20
+func TestTagDefalut(t *testing.T) {
+	var test = "Initiative"
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
+	var result, roller = Resolve(test, "1d20")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{1,20}}, []int{}, sliceSum())
+	if !strings.Contains(result, "Initiative") {
+		t.Errorf("ERROR :: Tag not found : Expected: 'Initiative: 1d20[x]= x', Got: '%s'", result)
 	}
 	t.Logf("Result: %s", result)
 }
@@ -187,7 +226,7 @@ func TestAdvantageBasic(t *testing.T) {
 	var test = "h2d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher())
 	t.Logf("Result: %s", result)
@@ -199,9 +238,21 @@ func TestAdvantageBonus(t *testing.T) {
 	var test = "h2d20 + 7"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+7= d3' d3 = max(d1, d2)+7")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20}}, []int{7}, sliceHigher())
+	t.Logf("Result: %s", result)
+}
+
+// Test default advantage roll with no die
+// Minimum value 1, Maximum value 20
+func TestAdvantageDefault(t *testing.T) {
+	var test = ""
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
+	var result, roller = Resolve(test, "h2d20")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher())
 	t.Logf("Result: %s", result)
 }
 
@@ -211,7 +262,7 @@ func TestDisadvantageBasic(t *testing.T) {
 	var test = "l2d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = min(d1, d2)")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceLower())
 	t.Logf("Result: %s", result)
@@ -223,8 +274,20 @@ func TestDisadvantageBonus(t *testing.T) {
 	var test = "l2d20 +6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+6= d3' d3 = min(d1, d2)+6")
-	var result, roller = Resolve(test)
+	var result, roller = Resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2,20}}, []int{6}, sliceLower())
+	t.Logf("Result: %s", result)
+}
+
+// Test default disadvantage with no die
+// Minimum value 1, Maximum value 20
+func TestDisadvantageDefault(t *testing.T) {
+	var test = ""
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = min(d1, d2)")
+	var result, roller = Resolve(test, "l2d20")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceLower())
 	t.Logf("Result: %s", result)
 }

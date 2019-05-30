@@ -24,10 +24,11 @@ type Roller struct {
 }
 
 // Main script that goes through all the steps to retrieve dice info, bonus info and tagging info
-func Resolve(command string) (string, Roller) {
+// Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
+func Resolve(command string, defaultRoll string) (string, Roller) {
 	var r = Roller{command, []check{}, []int{},  0}
 
-	r.extractDice()
+	r.extractDice(defaultRoll)
 
 	r.extractBonus()
 
@@ -49,8 +50,13 @@ func (r *Roller) calcTotal () {
 }
 
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
-func (r *Roller) extractDice () {
+// Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
+func (r *Roller) extractDice (defaultRoll string) {
 	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
+	// In case no die was found insert the defaultRoll as a pre-generated roll
+	if len(regexDices.FindAllStringSubmatch(r.command, -1)) == 0 {
+		r.command = fmt.Sprintf("%s%s", defaultRoll, r.command)
+	}
 
 	for _, match := range regexDices.FindAllStringSubmatch(r.command, -1) {
 		var roll = mapRoll(regexDices.SubexpNames(), match)
