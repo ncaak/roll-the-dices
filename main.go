@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ncaak/roll-the-dices/lib/conn"
-	"github.com/ncaak/roll-the-dices/lib/dices"
+	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
 	"fmt"
@@ -17,8 +17,7 @@ func main() {
 
 	var offset = storage.GetUpdateOffset()
 	var messages = conn.GetUpdates(offset)
-
-log.Print(dices.New())
+	
 	for _, msg := range messages {
 
 		if msg.IsCommand() == true {
@@ -29,17 +28,17 @@ log.Print(dices.New())
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
 				switch command[1] {
-				case acceptedCommands[0]:
-					reply = dices.Roll(argument)
+				case acceptedCommands[0]: // tira
+					reply, _ = dice.Resolve(argument, "1d20")
 
-				case acceptedCommands[1]:
-					reply = dices.Advantage(argument)
+				case acceptedCommands[1]: // v
+					reply, _ = dice.Resolve(argument, "h2d20")
 
-				case acceptedCommands[2]:
-					reply = dices.Disadvantage(argument)
+				case acceptedCommands[2]: // dv
+					reply, _ = dice.Resolve(argument, "l2d20")
 				}
 
-				//conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
 				fmt.Println("reply: ", reply)
 			}
 
@@ -47,9 +46,8 @@ log.Print(dices.New())
 	}
 
 	if len(messages) > 0 {
-		//var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		//storage.SetLastUpdateId(newOffset)
-		fmt.Println("debug mode active")
+		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
+		storage.SetLastUpdateId(newOffset)
 	}
 	storage.Close()
 
