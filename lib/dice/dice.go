@@ -62,7 +62,7 @@ func (r *Roller) extractDice (defaultRoll string) {
 		var roll = mapRoll(regexDices.SubexpNames(), match)
 		var dices, _ = strconv.Atoi(roll["dice"])
 		var faces, _ = strconv.Atoi(roll["faces"])
-		r.newCheck(dices, faces, roll["mod"])
+		r.newCheck(dices, faces, getCheckAction(roll["mod"]))
 		r.extractFromCommand(roll["command"])
 	}
 }
@@ -120,24 +120,10 @@ func (r *Roller) formatReply () string {
 	return fmtReply.String()
 }
 
-// Mapping values extracted from regex that shares index
-func mapRoll(names []string, values []string) map[string]string {
-	var rolls = map[string]string{}
-	for i, value := range values {
-		if names[i] != "" {
-			rolls[names[i]] = value
-		} else {
-			rolls["command"] = value
-		}
-	}
-	return rolls
-}
-
 // Generates results with given dices and die faces
-func (r *Roller) newCheck (dice int, faces int, mod string) {
+func (r *Roller) newCheck (dice int, faces int, action func(int, int) int) {
 	var results = []int{}
 	var total = 0
-	var action = getCheckAction(mod)
 
 	for rolls := 0; rolls < dice; rolls++ {
 		// Generating new seed every execution
@@ -176,4 +162,17 @@ func getCheckAction(modifier string) (action func(int, int) int) {
 			action = func(subtotal int, value int) int { return subtotal + value }
 	}
 	return
+}
+
+// Mapping values extracted from regex that shares index
+func mapRoll(names []string, values []string) map[string]string {
+	var rolls = map[string]string{}
+	for i, value := range values {
+		if names[i] != "" {
+			rolls[names[i]] = value
+		} else {
+			rolls["command"] = value
+		}
+	}
+	return rolls
 }
