@@ -52,7 +52,7 @@ func (r *Roller) calcTotal () {
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
 func (r *Roller) extractDice (defaultRoll string) {
-	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
+	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<arg>\d)?(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
 	// In case no die was found insert the defaultRoll as a pre-generated roll
 	if len(regexDices.FindAllStringSubmatch(r.command, -1)) == 0 {
 		r.command = fmt.Sprintf("%s%s", defaultRoll, r.command)
@@ -62,7 +62,7 @@ func (r *Roller) extractDice (defaultRoll string) {
 		var roll = mapRoll(regexDices.SubexpNames(), match)
 		var dices, _ = strconv.Atoi(roll["dice"])
 		var faces, _ = strconv.Atoi(roll["faces"])
-		r.newCheck(dices, faces, getCheckAction(roll["mod"]))
+		r.newCheck(dices, faces, getCheckAction(roll["mod"], roll["arg"]))
 		r.extractFromCommand(roll["command"])
 	}
 }
@@ -121,9 +121,8 @@ func (r *Roller) formatReply () string {
 }
 
 // Generates results with given dices and die faces
-func (r *Roller) newCheck (dice int, faces int, action func(int, int) int) {
+func (r *Roller) newCheck (dice int, faces int, action func([]int) int) {
 	var results = []int{}
-	var total = 0
 
 	for rolls := 0; rolls < dice; rolls++ {
 		// Generating new seed every execution
@@ -131,35 +130,44 @@ func (r *Roller) newCheck (dice int, faces int, action func(int, int) int) {
 		// Minimum die value is 1, in randomizer is 0
 		var roll = rand.Intn(faces)+1
 		// Retrieves the action value, by default is the sum of each value but can be modified
-		total = action(total, roll)
 		results = append(results, roll)
 	}
+	var total = action(results)
 	// new structure for each check
 	r.checks = append(r.checks, check{dice, faces, results, total})
 }
 
 // Provides polymorphism to newCheck method, returning an action depending on the modifier
 // Valid modifiers that can affect a roll (h, l)
-func getCheckAction(modifier string) (action func(int, int) int) {
+func getCheckAction(modifier string, argument string) (action func([]int) int) {
 	switch modifier {
 		case "h": // Higher roll on a check
-			action = func(top int, value int) int {
-				if top < value {
-					top = value
+			action = func(results []int) (higher int) {
+				for _, value := range results {
+					if higher < value {
+						higher = value
+					}
 				}
-				return top
+				return
 			}
 
 		case "l": // Lower roll on a check
-			action = func(lower int, value int) int {
-				if lower > value || lower == 0 {
-					lower = value
+			action = func(results []int) (lower int) {	
+				for _, value := range results {
+					if lower > value || lower == 0 {
+						lower = value
+					}
 				}
-				return lower
+				return
 			}
 
 		default: // default action is rolls sum
-			action = func(subtotal int, value int) int { return subtotal + value }
+			action = func(results []int) (total int) {
+				for _, value := range results {
+					total += value
+				}
+				return
+			}
 	}
 	return
 }
