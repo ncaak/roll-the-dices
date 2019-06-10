@@ -2,6 +2,7 @@ package dice
 
 import (
 	"testing"
+	"sort"
 	"strings"
 )
 
@@ -21,14 +22,19 @@ func sliceSum() func([]int) int {
 }
 
 // Returns the higher value among the slice items
-func sliceHigher() func([]int) int {
-	return func(slice []int) (top int) {
-		for _, item := range slice {
-			if item > top {
-				top = item
-			}
-		}
-		return
+func sliceHigher(dice int) func([]int) int {
+	return func(slice []int) int {
+		sort.Ints(slice)
+		sum := sliceSum()
+		return sum(slice[len(slice)-dice:])
+//return len(slice)
+//
+//		for _, item := range slice {
+//			if item > top {
+//				top = item
+//			}
+//		}
+//		return
 	}
 }
 
@@ -72,7 +78,7 @@ func checkRoll(t *testing.T, r Roller, matrix diceMatrix, bonus []int, action fu
 		checkTotal += checkSum
 	}
 	// Checks that check total coincides with check results sum
-	if checkTotal + action(bonus) != r.total {
+	if checkTotal + sliceSum()(bonus) != r.total {
 		t.Errorf("ERROR :: Wrong check total : Expected: %d, Got: %d", checkTotal, r.total)
 	}
 }
@@ -228,7 +234,7 @@ func TestAdvantageBasic(t *testing.T) {
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
 	var result, roller = Resolve(test, "h2d20")
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher())
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher(1))
 	t.Logf("Result: %s", result)
 }
 
@@ -240,7 +246,7 @@ func TestAdvantageBonus(t *testing.T) {
 	t.Log("Expected roll: '2d20[d1 d2]+7= d3' d3 = max(d1, d2)+7")
 	var result, roller = Resolve(test, "h2d20")
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20}}, []int{7}, sliceHigher())
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{7}, sliceHigher(1))
 	t.Logf("Result: %s", result)
 }
 
@@ -252,7 +258,19 @@ func TestAdvantageDefault(t *testing.T) {
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
 	var result, roller = Resolve(test, "h2d20")
 	// Sends roll to checker
-	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher())
+	checkRoll(t, roller, diceMatrix{{2,20}}, []int{}, sliceHigher(1))
+	t.Logf("Result: %s", result)
+}
+
+// Test complex advantage roll with multiple higher rolls
+// Minimum value 3, Maximum value 18
+func TestAdvantageComplex(t *testing.T) {
+	var test = "3h4d6"
+	t.Logf("Test roll: %s", test)
+	t.Log("Expected roll: '4d6[d1 d2 d3 d4]= d5' d5 = 3bestOf(d1, d2, d3, d4)")
+	var result, roller = Resolve(test, "3h4d6")
+	// Sends roll to checker
+	checkRoll(t, roller, diceMatrix{{4,6}}, []int{}, sliceHigher(3))
 	t.Logf("Result: %s", result)
 }
 

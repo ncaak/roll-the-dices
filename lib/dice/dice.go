@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -140,25 +141,29 @@ func (r *Roller) newCheck (dice int, faces int, action func([]int) int) {
 // Provides polymorphism to newCheck method, returning an action depending on the modifier
 // Valid modifiers that can affect a roll (h, l)
 func getCheckAction(modifier string, argument string) (action func([]int) int) {
+	var arg, _ = strconv.Atoi(argument)
+
 	switch modifier {
 		case "h": // Higher roll on a check
-			action = func(results []int) (higher int) {
-				for _, value := range results {
-					if higher < value {
-						higher = value
-					}
+			action = func(results []int) int {
+				// Avoid wrong command spelling
+				if arg > len(results) {
+					arg = len(results)
+				} else if arg == 0 {
+					arg = 1
 				}
-				return
+				// Sorts the results by increasing order
+				tmp := make([]int, len(results))
+				copy(tmp, results)
+				sort.Ints(tmp)
+				// Returns
+				return sum(tmp[len(tmp)-arg:])
 			}
 
 		case "l": // Lower roll on a check
-			action = func(results []int) (lower int) {	
-				for _, value := range results {
-					if lower > value || lower == 0 {
-						lower = value
-					}
-				}
-				return
+			action = func(results []int) int {
+				sort.Ints(results)
+				return results[0]
 			}
 
 		default: // default action is rolls sum
@@ -183,4 +188,12 @@ func mapRoll(names []string, values []string) map[string]string {
 		}
 	}
 	return rolls
+}
+
+// Sum up slice values iterating through the slice
+func sum(slice []int) (total int) {
+	for _, value := range slice {
+		total += value
+	}
+	return
 }
