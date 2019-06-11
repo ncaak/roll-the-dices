@@ -156,7 +156,7 @@ func getCheckAction(modifier string, argument string) (action func([]int) int) {
 				tmp := make([]int, len(results))
 				copy(tmp, results)
 				sort.Ints(tmp)
-				// Returns
+				// Returns slice with the number of items defined by argument (or 1)
 				return sum(tmp[len(tmp)-arg:])
 			}
 

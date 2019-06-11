@@ -27,14 +27,6 @@ func sliceHigher(dice int) func([]int) int {
 		sort.Ints(slice)
 		sum := sliceSum()
 		return sum(slice[len(slice)-dice:])
-//return len(slice)
-//
-//		for _, item := range slice {
-//			if item > top {
-//				top = item
-//			}
-//		}
-//		return
 	}
 }
 
