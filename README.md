@@ -7,10 +7,14 @@ Currently only a bunch of scripts that make some queries to mySQL, some requests
 Current accepted commands and parameters, returned from API requests:
 
 ### Parameters
-**dice**: [`operator`] `dice_number` d `die faces`
->Both _dice number_ and _die faces_ should be integers.  _Operator_ (*+*) should be indicated if there is more than one dice in the command.
+**dice**: [`operator`] [`modifier`] `dice_number` d `die faces`
+>Both _dice number_ and _die faces_ should be integers.  _Operator_ (*+*) should be indicated if there is more than one dice in the command. _Modifier_ already can be set to **h** to take the higher value of the roll. If the modifier is added with an integer, it will be the number of higher results from the roll
 >
-_Examples_: 1d20, 1d200, 1d8+3d6
+_Examples_:
+- 1d20 (one die of twenty faces)
+- h3d10 (the higher result of three dice of ten faces)
+- 1d8+3d6 (the sum of one die of eight faces plus three dice of six faces)
+- 3h6d10 (the three higher results of six dice of ten faces)
 
 **bonus**: `operator` `bonus quantifier`
 >_Operator_ (*+* or *-*) should be indicated always, even if the command didn't use _dice_ parameters.
@@ -33,6 +37,7 @@ _Examples:_
 | tira 1d10+7 | 1d10[7]+7= 14 |
 | tira +2 | 1d20[12]+2 = 14 |
 | tira 1d20+3 Initiative | Initiative: 1d20[2]+3= 5 |
+| tira 2h6d10 Jump | Jump: 6d10[10 2 1 6 3 4]= 16 |
 
 **v** [_bonus_[_bonus_[...]]] [_tag_]
 > Resolves an advantage roll: Rolling two twenty-sided dice and taking the higher roll
@@ -57,7 +62,11 @@ _Examples:_
 | dv Initiative | Initiative: 1d20[2 7]= 2 |
 
 ## Versioning
-Current stable version: 0.2.2-beta
+Current stable version: v0.3.1-beta
+#### Changelog
+| version |  notes |
+| --- | --- |
+| v0.3 | - Included new roll modifier to allow rolling any die number and taking any best die number |
 
 ## License
 This project is licensed under GPL-3.0, see [LICENSE](./LICENSE) file for details
