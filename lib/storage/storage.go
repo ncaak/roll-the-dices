@@ -11,10 +11,10 @@ const tbUpdates = "Updates"
 
 var database *sql.DB
 
-func connect() {
+func connect(env string) {
 	fmt.Println("New connection to database")
 
-	db, err := sql.Open("mysql", config.GetDbKey() + "@/pifiabot")
+	db, err := sql.Open("mysql", config.GetSettings(env).Dbkey + "@/pifiabot")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -28,9 +28,9 @@ func Close() {
 	fmt.Println("Connection to database closed")
 }
 
-func query(queryString string) *sql.Rows {
+func query(env string, queryString string) *sql.Rows {
 	if database == nil {
-		connect()
+		connect(env)
 	}
 	
 	rows, err := database.Query(queryString)
@@ -41,8 +41,8 @@ func query(queryString string) *sql.Rows {
 	return rows
 }
 
-func GetUpdateOffset() int {
-	var results = query(fmt.Sprintf("SELECT * FROM %s", tbUpdates))
+func GetUpdateOffset(env string) int {
+	var results = query(env, fmt.Sprintf("SELECT * FROM %s", tbUpdates))
 
 	var offset int
 	for results.Next() {
@@ -52,6 +52,6 @@ func GetUpdateOffset() int {
 	return offset
 }
 
-func SetLastUpdateId(updateId string) {
-	query(fmt.Sprintf("UPDATE %s SET offset=%s", tbUpdates, updateId))
+func SetLastUpdateId(env string, updateId string) {
+	query(env, fmt.Sprintf("UPDATE %s SET offset=%s", tbUpdates, updateId))
 }

@@ -2,8 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"strings"
 	"os"
 )
 
@@ -18,7 +16,7 @@ type config struct {
 }
 
 // Retrieves settings from environment variable and builds config structure
-func setEnvironment(env string) config {
+func GetSettings(env string) config {
 	var cfg = config{}
 	var settings = []byte(os.Getenv(env))
 	
@@ -26,20 +24,4 @@ func setEnvironment(env string) config {
 		panic(err)
 	}
 	return cfg
-}
-
-func getFileInfo(fileName string) string {
-	data, err := ioutil.ReadFile(cfgPath + fileName)
-	if err != nil {
-		panic(err.Error())
-	}
-	return strings.TrimSuffix(string(data), "\n")
-}
-
-func GetToken() string {
-	return getFileInfo(requestsToken)
-}
-
-func GetDbKey() string {
-	return getFileInfo(dbCredentials)
 }

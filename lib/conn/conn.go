@@ -23,8 +23,8 @@ func send(r *http.Request) *http.Response {
 	return resp
 }
 
-func GetUpdates(offset int) []update.Result {
-	var url = fmt.Sprintf("https://api.telegram.org/bot%s/getUpdates?offset=%d", config.GetToken(), offset)
+func GetUpdates(env string, offset int) []update.Result {
+	var url = fmt.Sprintf("https://api.telegram.org/bot%s/getUpdates?offset=%d", config.GetSettings(env).Token, offset)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -41,8 +41,8 @@ func GetUpdates(offset int) []update.Result {
 	return response.Result
 }
 
-func SendReply(chatId int, msgText string, replyId int) {
-	var url = fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", config.GetToken())
+func SendReply(env string, chatId int, msgText string, replyId int) {
+	var url = fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", config.GetSettings(env).Token)
 
 	type Message struct {
 		ChatId int `json:"chat_id"`

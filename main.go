@@ -15,8 +15,9 @@ var acceptedCommands = [...]string{"tira","v","dv"}
 func main() {
 	log.Println("beginning routine")
 
-	var offset = storage.GetUpdateOffset()
-	var messages = conn.GetUpdates(offset)
+	var env = "ENV_DEV"
+	var offset = storage.GetUpdateOffset(env)
+	var messages = conn.GetUpdates(env, offset)
 	
 	for _, msg := range messages {
 
@@ -38,7 +39,7 @@ func main() {
 					reply, _ = dice.Resolve(argument, "l2d20")
 				}
 
-				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				conn.SendReply(env, msg.Message.Chat.Id, reply, msg.Message.MessageId)
 				fmt.Println("reply: ", reply)
 			}
 
@@ -47,7 +48,7 @@ func main() {
 
 	if len(messages) > 0 {
 		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		storage.SetLastUpdateId(newOffset)
+		storage.SetLastUpdateId(env, newOffset)
 	}
 	storage.Close()
 
