@@ -7,24 +7,23 @@ import (
 	"github.com/ncaak/roll-the-dices/lib/config"
 )
 
-const tbUpdates = "Updates"
-
 // Structure to handle operations with database
 type dataBase struct {
 	core *sql.DB
+	settings config.DB
 }
 
-// Initialize database opening it and waiting for next operations to be done
-func Init(cfg config.Config) dataBase {
+// Initialize database opening it and saving settings retrieved from argument
+func Init(cfg config.DB) dataBase {
 	fmt.Println("New connection to database")
 
-	db, err := sql.Open("mysql", cfg.Dbkey+"@/pifiabot")
+	db, err := sql.Open(cfg.Type, fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.Name))
 	if err != nil {
 		panic(err.Error())
 	}
 
 	fmt.Println("Connection to database successful")
-	return dataBase{db}
+	return dataBase{db, cfg}
 }
 
 // Close database operations
@@ -34,8 +33,10 @@ func (db *dataBase) Close() {
 }
 
 // Retrieves offset value saved into database previously
+// Uses SQL sentence: SELECT * FROM <TABLE>
+// <TABLE> is retrieved from configuration set on Initialization
 func (db *dataBase) GetOffset() int {
-	var results = db.query(fmt.Sprintf("SELECT * FROM %s", tbUpdates))
+	var results = db.query(fmt.Sprintf("SELECT * FROM %s", db.settings.OffsetTable))
 
 	var offset int
 	for results.Next() {
@@ -46,8 +47,11 @@ func (db *dataBase) GetOffset() int {
 }
 
 // Saves offset value into database
+// Uses SQL sentence: UPDATE <TABLE> SET <COLUMN>=<VALUE>
+// <TABLE> and <COLUMN> are retrieved from configuration set on Initialization
+// <VALUE> is retrieved from function's argument
 func (db *dataBase) SetOffset(offset string) {
-	db.query(fmt.Sprintf("UPDATE %s SET offset=%s", tbUpdates, offset))
+	db.query(fmt.Sprintf("UPDATE %s SET %s=%s", db.settings.OffsetTable, db.settings.OffsetColumn, offset))
 }
 
 // Non exported function to send the queries to database

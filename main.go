@@ -18,7 +18,7 @@ func main() {
 
 	var env = "ENV_DEV"
 	settings := config.GetSettings("ENV_DEV")
-	var db = storage.Init(settings)
+	var db = storage.Init(settings.DataBase)
 	var offset = db.GetOffset()
 	var messages = conn.GetUpdates(env, offset)
 	
