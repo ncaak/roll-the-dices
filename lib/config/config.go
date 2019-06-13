@@ -15,7 +15,7 @@ type Config struct {
 func GetSettings(env string) Config {
 	var cfg = Config{}
 	var settings = []byte(os.Getenv(env))
-	
+
 	if err := json.Unmarshal(settings, &cfg); err != nil {
 		panic(err)
 	}
