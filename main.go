@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/conn"
 	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/storage"
@@ -16,7 +17,9 @@ func main() {
 	log.Println("beginning routine")
 
 	var env = "ENV_DEV"
-	var offset = storage.GetUpdateOffset(env)
+	settings := config.GetSettings("ENV_DEV")
+	var db = storage.Init(settings)
+	var offset = db.GetOffset()
 	var messages = conn.GetUpdates(env, offset)
 	
 	for _, msg := range messages {
@@ -48,9 +51,9 @@ func main() {
 
 	if len(messages) > 0 {
 		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		storage.SetLastUpdateId(env, newOffset)
+		db.SetOffset(newOffset)
 	}
-	storage.Close()
 
+	db.Close()
 	log.Println("ending routine")
 }
