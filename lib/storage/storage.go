@@ -9,7 +9,7 @@ import (
 
 // Structure to handle operations with database
 type dataBase struct {
-	core *sql.DB
+	core     *sql.DB
 	settings config.DB
 }
 
