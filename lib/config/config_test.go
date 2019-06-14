@@ -4,17 +4,17 @@ import (
 	"testing"
 )
 
-// Tests basic configuration retrieve from DEV environment
-func TestConfigBasic(t *testing.T) {
+// Tests retrieving API configuration from DEV environment variables
+func TestConfigAPI(t *testing.T) {
 	var test = "ENV_DEV"
 	t.Logf("Test configuration for environment: %s", test)
-	t.Log("Expected result: 'Token: <token>, DbKey: <dbkey>'")
+	t.Log("Expected result: 'API: {BaseUrl:<baseUrl> Token:<token>}'")
 
 	var result = GetSettings(test)
-	t.Logf("Result: Token: %s, DbKey: %s", result.Token, result.Dbkey)
-	t.Logf("Result: %s", result)
+	t.Logf("Result: API: %+v", result.Api)
 }
 
+// Tests retrieving Database configuration from DEV environment variables
 func TestConfigDB(t *testing.T) {
 	var test = "ENV_DEV"
 	t.Logf("Test configuration for environment: %s", test)

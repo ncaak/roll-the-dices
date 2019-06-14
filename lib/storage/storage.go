@@ -16,12 +16,11 @@ type dataBase struct {
 // Initialize database opening it and saving settings retrieved from argument
 func Init(cfg config.DB) dataBase {
 	fmt.Println("New connection to database")
-
+	// Opening the database allowing to send queries
 	db, err := sql.Open(cfg.Type, fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.Name))
 	if err != nil {
 		panic(err.Error())
 	}
-
 	fmt.Println("Connection to database successful")
 	return dataBase{db, cfg}
 }
@@ -37,12 +36,11 @@ func (db *dataBase) Close() {
 // <TABLE> is retrieved from configuration set on Initialization
 func (db *dataBase) GetOffset() int {
 	var results = db.query(fmt.Sprintf("SELECT * FROM %s", db.settings.OffsetTable))
-
+	// Retrieve offset value from query
 	var offset int
 	for results.Next() {
 		results.Scan(&offset)
 	}
-
 	return offset
 }
 
@@ -60,6 +58,5 @@ func (db *dataBase) query(queryString string) *sql.Rows {
 	if err != nil {
 		panic(err.Error())
 	}
-
 	return rows
 }

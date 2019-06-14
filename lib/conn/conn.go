@@ -1,14 +1,29 @@
 package conn
 
-import(
-	"github.com/ncaak/roll-the-dices/structs/update"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/ncaak/roll-the-dices/lib/config"
+	"github.com/ncaak/roll-the-dices/structs/update"
 	"net/http"
 	"time"
-	"encoding/json"
-	"bytes"
-	"fmt"
 )
+
+// Structure to handle operations with API
+type api struct {
+	core     *http.Client
+	settings config.API
+	url      string
+}
+
+// Initialize client to http library package and prepare package structure to be used afterwards
+func Init(cfg config.API) api {
+	var client = &http.Client{}
+	client.Timeout = 30 * time.Second
+
+	return api{client, cfg, fmt.Sprintf("%s%s/", cfg.BaseUrl, cfg.Token)}
+}
 
 func send(r *http.Request) *http.Response {
 	var client = &http.Client{}
@@ -34,9 +49,9 @@ func GetUpdates(env string, offset int) []update.Result {
 	var resp = send(req)
 
 	defer resp.Body.Close()
-	
+
 	response := update.Update{}
-	json.NewDecoder(resp.Body).Decode(&response) 
+	json.NewDecoder(resp.Body).Decode(&response)
 
 	return response.Result
 }
@@ -45,11 +60,10 @@ func SendReply(env string, chatId int, msgText string, replyId int) {
 	var url = fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", config.GetSettings(env).Token)
 
 	type Message struct {
-		ChatId int `json:"chat_id"`
-		Text string `json:"text"`
-		ReplyId int `json:"reply_to_message_id"`
+		ChatId  int    `json:"chat_id"`
+		Text    string `json:"text"`
+		ReplyId int    `json:"reply_to_message_id"`
 	}
-
 
 	msg := Message{chatId, msgText, replyId}
 	jsonString, _ := json.Marshal(msg)
@@ -62,6 +76,6 @@ func SendReply(env string, chatId int, msgText string, replyId int) {
 	req.Header.Set("Content-Type", "application/json")
 
 	var resp = send(req)
-	
+
 	defer resp.Body.Close()
 }
