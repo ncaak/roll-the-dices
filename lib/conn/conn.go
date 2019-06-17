@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ncaak/roll-the-dices/lib/config"
-	"github.com/ncaak/roll-the-dices/structs/update"
+	"github.com/ncaak/roll-the-dices/lib/request/structs"
 	"net/http"
 	"time"
 )
@@ -27,7 +27,7 @@ func Init(cfg config.API) api {
 
 // Sends a GET request to server to retrieve updates from the Offset
 // offset - Last retrieved update message Id
-func (api *api) GetUpdates(offset int) []update.Result {
+func (api *api) GetUpdates(offset int) []structs.Result {
 	var endpoint = fmt.Sprintf("%s%s?offset=%d", api.url, "getUpdates", offset)
 
 	req, err := http.NewRequest("GET", endpoint, nil)
@@ -39,7 +39,7 @@ func (api *api) GetUpdates(offset int) []update.Result {
 
 	defer resp.Body.Close()
 
-	response := update.Update{}
+	response := structs.Update{}
 	json.NewDecoder(resp.Body).Decode(&response)
 
 	return response.Result
@@ -81,4 +81,3 @@ func (api *api) send(r *http.Request) *http.Response {
 	}
 	return resp
 }
-
