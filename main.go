@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/ncaak/roll-the-dices/lib/config"
-	"github.com/ncaak/roll-the-dices/lib/conn"
 	"github.com/ncaak/roll-the-dices/lib/dice"
+	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
 	"fmt"
@@ -20,7 +20,7 @@ func main() {
 
 	var settings = config.GetSettings(ENVIRONMENT)
 	var db = storage.Init(settings.DataBase)
-	var http = conn.Init(settings.Api)
+	var http = request.Init(settings.Api)
 	var messages = http.GetUpdates(db.GetOffset())
 	
 	for _, msg := range messages {
