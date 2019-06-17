@@ -25,7 +25,7 @@ func Init(cfg config.API) api {
 	return api{client, cfg, fmt.Sprintf("%s%s/", cfg.BaseUrl, cfg.Token)}
 }
 
-// Send a GET request to server to retrieve updates from the Offset
+// Sends a GET request to server to retrieve updates from the Offset
 // offset - Last retrieved update message Id
 func (api *api) GetUpdates(offset int) []update.Result {
 	var endpoint = fmt.Sprintf("%s%s?offset=%d", api.url, "getUpdates", offset)
@@ -45,15 +45,10 @@ func (api *api) GetUpdates(offset int) []update.Result {
 	return response.Result
 }
 
-// Auxiliary method to send requests
-func (api *api) send(r *http.Request) *http.Response {
-	resp, err := api.client.Do(r)
-	if err != nil {
-		panic(err.Error())
-	}
-	return resp
-}
-
+// Sends a POST request to server to deliver the reply to a message
+// chatId - References the unique chat what the message was retreived from
+// msgText - The reply in plain text to be delivered
+// replyId - References the unique source message to appear like a reply
 func (api *api) SendReply(chatId int, msgText string, replyId int) {
 	var endpoint = fmt.Sprintf("%s%s", api.url, "sendMessage")
 
@@ -77,3 +72,13 @@ func (api *api) SendReply(chatId int, msgText string, replyId int) {
 
 	defer resp.Body.Close()
 }
+
+// Auxiliary method to send requests
+func (api *api) send(r *http.Request) *http.Response {
+	resp, err := api.client.Do(r)
+	if err != nil {
+		panic(err.Error())
+	}
+	return resp
+}
+
