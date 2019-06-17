@@ -50,26 +50,18 @@ func (api *api) GetUpdates(offset int) []structs.Result {
 // msgText - The reply in plain text to be delivered
 // replyId - References the unique source message to appear like a reply
 func (api *api) SendReply(chatId int, msgText string, replyId int) {
-	var endpoint = fmt.Sprintf("%s%s", api.url, "sendMessage")
-
-	type Message struct {
-		ChatId  int    `json:"chat_id"`
-		Text    string `json:"text"`
-		ReplyId int    `json:"reply_to_message_id"`
-	}
-
-	msg := Message{chatId, msgText, replyId}
-	jsonString, _ := json.Marshal(msg)
-
-	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonString))
+	// Prepare the request to send the reply to the server
+	req, err := http.NewRequest(
+		"POST",
+		fmt.Sprintf("%s%s", api.url, "sendMessage"),
+		getReplyBody(chatId, msgText, replyId),
+	)
 	if err != nil {
 		panic(err.Error())
 	}
-
 	req.Header.Set("Content-Type", "application/json")
-
+	// No need of handle the response if there is no break in the request
 	var resp = api.send(req)
-
 	defer resp.Body.Close()
 }
 
@@ -80,4 +72,12 @@ func (api *api) send(r *http.Request) *http.Response {
 		panic(err.Error())
 	}
 	return resp
+}
+
+// Format the Reply using a struct and return the bytes object needed for the request
+func getReplyBody(chatId int, msgText string, replyId int) *bytes.Buffer {
+	var reply = structs.Reply{chatId, msgText, replyId}
+	jsonReply, _ := json.Marshal(reply)
+
+	return bytes.NewBuffer(jsonReply)
 }
