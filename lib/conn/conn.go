@@ -12,7 +12,7 @@ import (
 
 // Structure to handle operations with API
 type api struct {
-	core     *http.Client
+	client   *http.Client
 	settings config.API
 	url      string
 }
@@ -25,28 +25,17 @@ func Init(cfg config.API) api {
 	return api{client, cfg, fmt.Sprintf("%s%s/", cfg.BaseUrl, cfg.Token)}
 }
 
-func send(r *http.Request) *http.Response {
-	var client = &http.Client{}
+// Send a GET request to server to retrieve updates from the Offset
+// offset - Last retrieved update message Id
+func (api *api) GetUpdates(offset int) []update.Result {
+	var endpoint = fmt.Sprintf("%s%s?offset=%d", api.url, "getUpdates", offset)
 
-	client.Timeout = 30 * time.Second
-
-	resp, err := client.Do(r)
+	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return resp
-}
-
-func GetUpdates(env string, offset int) []update.Result {
-	var url = fmt.Sprintf("https://api.telegram.org/bot%s/getUpdates?offset=%d", config.GetSettings(env).Token, offset)
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var resp = send(req)
+	var resp = api.send(req)
 
 	defer resp.Body.Close()
 
@@ -56,8 +45,17 @@ func GetUpdates(env string, offset int) []update.Result {
 	return response.Result
 }
 
-func SendReply(env string, chatId int, msgText string, replyId int) {
-	var url = fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", config.GetSettings(env).Token)
+// Auxiliary method to send requests
+func (api *api) send(r *http.Request) *http.Response {
+	resp, err := api.client.Do(r)
+	if err != nil {
+		panic(err.Error())
+	}
+	return resp
+}
+
+func (api *api) SendReply(chatId int, msgText string, replyId int) {
+	var endpoint = fmt.Sprintf("%s%s", api.url, "sendMessage")
 
 	type Message struct {
 		ChatId  int    `json:"chat_id"`
@@ -68,14 +66,14 @@ func SendReply(env string, chatId int, msgText string, replyId int) {
 	msg := Message{chatId, msgText, replyId}
 	jsonString, _ := json.Marshal(msg)
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonString))
+	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonString))
 	if err != nil {
 		panic(err.Error())
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	var resp = send(req)
+	var resp = api.send(req)
 
 	defer resp.Body.Close()
 }

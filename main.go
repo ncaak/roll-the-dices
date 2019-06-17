@@ -11,16 +11,17 @@ import (
 	"strings"
 )
 
+const ENVIRONMENT = "ENV_DEV"
+
 var acceptedCommands = [...]string{"tira","v","dv"}
 
 func main() {
 	log.Println("beginning routine")
 
-	var env = "ENV_DEV"
-	settings := config.GetSettings("ENV_DEV")
+	var settings = config.GetSettings(ENVIRONMENT)
 	var db = storage.Init(settings.DataBase)
-	var offset = db.GetOffset()
-	var messages = conn.GetUpdates(env, offset)
+	var http = conn.Init(settings.Api)
+	var messages = http.GetUpdates(db.GetOffset())
 	
 	for _, msg := range messages {
 
@@ -42,7 +43,7 @@ func main() {
 					reply, _ = dice.Resolve(argument, "l2d20")
 				}
 
-				conn.SendReply(env, msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				http.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
 				fmt.Println("reply: ", reply)
 			}
 
