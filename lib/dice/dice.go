@@ -26,7 +26,7 @@ type Roller struct {
 
 // Main script that goes through all the steps to retrieve dice info, bonus info and tagging info
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
-func Resolve(command string, defaultRoll string) (string, Roller) {
+func Resolve(command string, defaultRoll string) Roller {
 	var r = Roller{command, []check{}, []int{}, 0}
 
 	r.extractDice(defaultRoll)
@@ -35,7 +35,7 @@ func Resolve(command string, defaultRoll string) (string, Roller) {
 
 	r.calcTotal()
 
-	return r.formatReply(), r
+	return r
 }
 
 // Sums up every roll made with dices and modifier included as a bonus (negative or positive)
@@ -92,7 +92,7 @@ func (r *Roller) extractFromCommand(usedOrder string) {
 // Generates a String with a verbose result of the roll
 // * Retrieves every result of every check done
 // * Retrieves every bonus
-func (r *Roller) formatReply() string {
+func (r *Roller) FormatReply() string {
 	var fmtReply strings.Builder
 	if strings.TrimSpace(r.command) != "" {
 		fmtReply.WriteString(fmt.Sprintf("%s: ", strings.TrimSpace(r.command)))
