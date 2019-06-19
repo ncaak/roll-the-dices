@@ -24,21 +24,27 @@ func main() {
 	for _, msg := range messages {
 
 		if msg.IsCommand() == true {
-			var command = regexp.MustCompile(`/(tira|v|dv)(.*)`).FindStringSubmatch(msg.GetCommand())
+			var command = regexp.MustCompile(`/(tira|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
-				var defaultValues = map[string]string{
+				var defValues = map[string]string{
 					"tira": "1d20",
 					"v":    "h2d20",
 					"dv":   "l2d20",
 				}
-				var roll = dice.Resolve(argument, defaultValues[command[1]])
 
-				api.SendReply(msg, roll.FormatReply())
-				fmt.Println("reply: ", roll.FormatReply())
+				if defRoll := defValues[command[1]]; defRoll != "" {
+					var roll = dice.Resolve(argument, defRoll)
+					api.SendReply(msg, roll.FormatReply(), "")
+					fmt.Println("reply: ", roll.FormatReply())
+
+				} else {
+					// test
+					api.SendReply(msg, "*test bold* _test cursiva_", "MarkDown")
+					fmt.Println("help provided")
+				}
 			}
-
 		}
 	}
 
