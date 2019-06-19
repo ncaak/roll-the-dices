@@ -43,7 +43,7 @@ func main() {
 					roll = dice.Resolve(argument, "l2d20")
 				}
 
-				http.SendReply(msg.Message.Chat.Id, roll.FormatReply(), msg.Message.MessageId)
+				http.SendReply(msg, roll.FormatReply())
 				fmt.Println("reply: ", roll.FormatReply())
 			}
 
