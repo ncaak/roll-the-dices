@@ -11,23 +11,23 @@ import (
 )
 
 type check struct {
-	dice int
-	faces int
+	dice    int
+	faces   int
 	results []int
-	total int
+	total   int
 }
 
 type Roller struct {
 	command string
-	checks []check
-	bonus []int
-	total int
+	checks  []check
+	bonus   []int
+	total   int
 }
 
 // Main script that goes through all the steps to retrieve dice info, bonus info and tagging info
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
 func Resolve(command string, defaultRoll string) (string, Roller) {
-	var r = Roller{command, []check{}, []int{},  0}
+	var r = Roller{command, []check{}, []int{}, 0}
 
 	r.extractDice(defaultRoll)
 
@@ -39,7 +39,7 @@ func Resolve(command string, defaultRoll string) (string, Roller) {
 }
 
 // Sums up every roll made with dices and modifier included as a bonus (negative or positive)
-func (r *Roller) calcTotal () {
+func (r *Roller) calcTotal() {
 	// Searches for every result of every check
 	for _, check := range r.checks {
 		r.total += check.total
@@ -52,7 +52,7 @@ func (r *Roller) calcTotal () {
 
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
-func (r *Roller) extractDice (defaultRoll string) {
+func (r *Roller) extractDice(defaultRoll string) {
 	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<arg>\d)?(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
 	// In case no die was found insert the defaultRoll as a pre-generated roll
 	if len(regexDices.FindAllStringSubmatch(r.command, -1)) == 0 {
@@ -69,7 +69,7 @@ func (r *Roller) extractDice (defaultRoll string) {
 }
 
 // Extracts strings referring bonuses from the command and add them as bonus in a slice
-func (r *Roller) extractBonus () {
+func (r *Roller) extractBonus() {
 	var regexBonus = regexp.MustCompile(`(\s?[+|-]\s?)(\d+)`)
 
 	for _, match := range regexBonus.FindAllStringSubmatch(r.command, -1) {
@@ -85,14 +85,14 @@ func (r *Roller) extractBonus () {
 
 // Removes the string executed from the command to avoid false positives in regex
 // e.g. dice could be catched as bonuses leaving a 'dx'
-func (r *Roller) extractFromCommand (usedOrder string) {
+func (r *Roller) extractFromCommand(usedOrder string) {
 	r.command = strings.Replace(r.command, usedOrder, "", 1)
 }
 
 // Generates a String with a verbose result of the roll
 // * Retrieves every result of every check done
 // * Retrieves every bonus
-func (r *Roller) formatReply () string {
+func (r *Roller) formatReply() string {
 	var fmtReply strings.Builder
 	if strings.TrimSpace(r.command) != "" {
 		fmtReply.WriteString(fmt.Sprintf("%s: ", strings.TrimSpace(r.command)))
@@ -122,14 +122,14 @@ func (r *Roller) formatReply () string {
 }
 
 // Generates results with given dices and die faces
-func (r *Roller) newCheck (dice int, faces int, action func([]int) int) {
+func (r *Roller) newCheck(dice int, faces int, action func([]int) int) {
 	var results = []int{}
 
 	for rolls := 0; rolls < dice; rolls++ {
 		// Generating new seed every execution
 		rand.Seed(time.Now().UnixNano())
 		// Minimum die value is 1, in randomizer is 0
-		var roll = rand.Intn(faces)+1
+		var roll = rand.Intn(faces) + 1
 		// Retrieves the action value, by default is the sum of each value but can be modified
 		results = append(results, roll)
 	}
@@ -144,35 +144,35 @@ func getCheckAction(modifier string, argument string) (action func([]int) int) {
 	var arg, _ = strconv.Atoi(argument)
 
 	switch modifier {
-		case "h": // Higher roll on a check
-			action = func(results []int) int {
-				// Avoid wrong command spelling
-				if arg > len(results) {
-					arg = len(results)
-				} else if arg == 0 {
-					arg = 1
-				}
-				// Sorts the results by increasing order
-				tmp := make([]int, len(results))
-				copy(tmp, results)
-				sort.Ints(tmp)
-				// Returns slice with the number of items defined by argument (or 1)
-				return sum(tmp[len(tmp)-arg:])
+	case "h": // Higher roll on a check
+		action = func(results []int) int {
+			// Avoid wrong command spelling
+			if arg > len(results) {
+				arg = len(results)
+			} else if arg == 0 {
+				arg = 1
 			}
+			// Sorts the results by increasing order
+			tmp := make([]int, len(results))
+			copy(tmp, results)
+			sort.Ints(tmp)
+			// Returns slice with the number of items defined by argument (or 1)
+			return sum(tmp[len(tmp)-arg:])
+		}
 
-		case "l": // Lower roll on a check
-			action = func(results []int) int {
-				sort.Ints(results)
-				return results[0]
-			}
+	case "l": // Lower roll on a check
+		action = func(results []int) int {
+			sort.Ints(results)
+			return results[0]
+		}
 
-		default: // default action is rolls sum
-			action = func(results []int) (total int) {
-				for _, value := range results {
-					total += value
-				}
-				return
+	default: // default action is rolls sum
+		action = func(results []int) (total int) {
+			for _, value := range results {
+				total += value
 			}
+			return
+		}
 	}
 	return
 }

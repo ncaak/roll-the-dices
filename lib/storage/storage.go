@@ -1,57 +1,62 @@
 package storage
 
 import (
-	"github.com/ncaak/roll-the-dices/lib/config"
-	"fmt"
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/ncaak/roll-the-dices/lib/config"
 )
 
-const tbUpdates = "Updates"
+// Structure to handle operations with database
+type dataBase struct {
+	core     *sql.DB
+	settings config.DB
+}
 
-var database *sql.DB
-
-func connect() {
+// Initialize database opening it and saving settings retrieved from argument
+func Init(cfg config.DB) dataBase {
 	fmt.Println("New connection to database")
-
-	db, err := sql.Open("mysql", config.GetDbKey() + "@/pifiabot")
+	// Opening the database allowing to send queries
+	db, err := sql.Open(cfg.Type, fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.Name))
 	if err != nil {
 		panic(err.Error())
 	}
-	
 	fmt.Println("Connection to database successful")
-	database = db
+	return dataBase{db, cfg}
 }
 
-func Close() {
-	defer database.Close()
+// Close database operations
+func (db *dataBase) Close() {
+	defer db.core.Close()
 	fmt.Println("Connection to database closed")
 }
 
-func query(queryString string) *sql.Rows {
-	if database == nil {
-		connect()
-	}
-	
-	rows, err := database.Query(queryString)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return rows
-}
-
-func GetUpdateOffset() int {
-	var results = query(fmt.Sprintf("SELECT * FROM %s", tbUpdates))
-
+// Retrieves offset value saved into database previously
+// Uses SQL sentence: SELECT * FROM <TABLE>
+// <TABLE> is retrieved from configuration set on Initialization
+func (db *dataBase) GetOffset() int {
+	var results = db.query(fmt.Sprintf("SELECT * FROM %s", db.settings.OffsetTable))
+	// Retrieve offset value from query
 	var offset int
 	for results.Next() {
 		results.Scan(&offset)
 	}
-	
 	return offset
 }
 
-func SetLastUpdateId(updateId string) {
-	query(fmt.Sprintf("UPDATE %s SET offset=%s", tbUpdates, updateId))
+// Saves offset value into database
+// Uses SQL sentence: UPDATE <TABLE> SET <COLUMN>=<VALUE>
+// <TABLE> and <COLUMN> are retrieved from configuration set on Initialization
+// <VALUE> is retrieved from function's argument
+func (db *dataBase) SetOffset(offset string) {
+	db.query(fmt.Sprintf("UPDATE %s SET %s=%s", db.settings.OffsetTable, db.settings.OffsetColumn, offset))
+}
+
+// Non exported function to send the queries to database
+func (db *dataBase) query(queryString string) *sql.Rows {
+	rows, err := db.core.Query(queryString)
+	if err != nil {
+		panic(err.Error())
+	}
+	return rows
 }
