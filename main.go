@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/ncaak/roll-the-dices/lib/conn"
+	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/dice"
+	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
 	"fmt"
@@ -10,13 +11,17 @@ import (
 	"strings"
 )
 
+const ENVIRONMENT = "ENV_DEV"
+
 var acceptedCommands = [...]string{"tira","v","dv"}
 
 func main() {
 	log.Println("beginning routine")
 
-	var offset = storage.GetUpdateOffset()
-	var messages = conn.GetUpdates(offset)
+	var settings = config.GetSettings(ENVIRONMENT)
+	var db = storage.Init(settings.DataBase)
+	var http = request.Init(settings.Api)
+	var messages = http.GetUpdates(db.GetOffset())
 	
 	for _, msg := range messages {
 
@@ -38,7 +43,7 @@ func main() {
 					reply, _ = dice.Resolve(argument, "l2d20")
 				}
 
-				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
+				http.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
 				fmt.Println("reply: ", reply)
 			}
 
@@ -47,9 +52,9 @@ func main() {
 
 	if len(messages) > 0 {
 		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		storage.SetLastUpdateId(newOffset)
+		db.SetOffset(newOffset)
 	}
-	storage.Close()
 
+	db.Close()
 	log.Println("ending routine")
 }
