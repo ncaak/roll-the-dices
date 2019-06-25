@@ -41,7 +41,7 @@ func main() {
 
 				} else {
 					// test
-					api.SendReply(msg, "*test bold* _test cursiva_", "MarkDown")
+					api.SendReply(msg, HELP, "MarkDown")
 					fmt.Println("help provided")
 				}
 			}
