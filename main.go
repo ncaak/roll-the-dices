@@ -40,8 +40,8 @@ func main() {
 					fmt.Println("reply: ", roll.FormatReply())
 
 				} else {
-					// test
-					api.SendReply(msg, HELP, "MarkDown")
+					// If the command is not in default values map, only option is help
+					api.SendReply(msg, dice.HELP, "MarkDown")
 					fmt.Println("help provided")
 				}
 			}
