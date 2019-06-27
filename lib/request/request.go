@@ -45,15 +45,15 @@ func (api *api) GetUpdates(offset int) []structs.Result {
 }
 
 // Sends a POST request to server to deliver the reply to a message
-// chatId - References the unique chat what the message was retreived from
-// msgText - The reply in plain text to be delivered
-// replyId - References the unique source message to appear like a reply
-func (api *api) SendReply(chatId int, msgText string, replyId int) {
+// message - Structure with the required fields to send the reply like Chat and Message indentifier
+// msgText - Messsae plain text to be sent as part of the reply
+// parse - Style type if the message has rich text
+func (api *api) SendReply(message structs.Result, msgText string, parse string) {
 	// Prepare the request to send the reply to the server
 	req, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf("%s%s", api.url, "sendMessage"),
-		getReplyBody(chatId, msgText, replyId),
+		getReplyBody(message, msgText, parse),
 	)
 	if err != nil {
 		panic(err.Error())
@@ -81,8 +81,8 @@ func getParsedUpdates(response *http.Response) []structs.Result {
 }
 
 // Format the Reply using a struct and return the bytes object needed for the request
-func getReplyBody(chatId int, msgText string, replyId int) *bytes.Buffer {
-	var reply = structs.Reply{chatId, msgText, replyId}
+func getReplyBody(msg structs.Result, msgText string, parse string) *bytes.Buffer {
+	var reply = structs.Reply{msg.GetChatId(), msgText, msg.GetReplyId(), parse}
 	jsonReply, _ := json.Marshal(reply)
 
 	return bytes.NewBuffer(jsonReply)
