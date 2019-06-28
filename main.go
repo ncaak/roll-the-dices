@@ -41,7 +41,7 @@ func main() {
 					fmt.Println("reply: ", roll.FormatReply())
 
 				} else if command[1] == "t" {
-					api.ReplyInlineKeyboard(msg)
+					fmt.Println(api.ReplyInlineKeyboard(msg))
 
 				} else {
 					api.ReplyHelp(msg, dice.HELP)

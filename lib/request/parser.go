@@ -10,8 +10,8 @@ import (
 // --- Responses ---
 
 // Returns a reply message with an inline keyboard
-func keyboardReply(r structs.Result, text string) *bytes.Buffer {
-	return encodeReply(structs.Reply{r.GetChatId(), text, r.GetReplyId(), ""})
+func keyboardReply(r structs.Result) *bytes.Buffer {
+	return encodeReply(structs.Reply{r.GetChatId(), "", r.GetReplyId(), ""})
 }
 
 // Returns a markdown format reply message

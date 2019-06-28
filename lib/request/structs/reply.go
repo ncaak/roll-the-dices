@@ -7,4 +7,5 @@ type Reply struct {
 	Text    string `json:"text"`
 	ReplyId int    `json:"reply_to_message_id"`
 	Parse   string `json:"parse_mode"`
+	//	ReplyMarkup string `json:"reply_markup"`
 }

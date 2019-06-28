@@ -56,8 +56,9 @@ func (api *api) ReplyHelp(message structs.Result, text string) {
 
 // Sends a POST request to server to deliver the message with an inline keyboard
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
-func (api *api) ReplyInlineKeyboard(message structs.Result) {
-
+func (api *api) ReplyInlineKeyboard(message structs.Result) string {
+	//api.sendMessage(keyboardReply(message))
+	return structs.NewDiceKeyboard()
 }
 
 // Sends a POST request to server to deliver the reply to a message
