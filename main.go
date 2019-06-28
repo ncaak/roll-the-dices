@@ -24,24 +24,27 @@ func main() {
 	for _, msg := range messages {
 
 		if msg.IsCommand() == true {
-			var command = regexp.MustCompile(`/(tira|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
+			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
-				var defValues = map[string]string{
+				var rollCommands = map[string]string{
 					"tira": "1d20",
 					"v":    "h2d20",
 					"dv":   "l2d20",
 				}
 
-				if defRoll := defValues[command[1]]; defRoll != "" {
+				// Detects the command entered being a roll command
+				if defRoll := rollCommands[command[1]]; defRoll != "" {
 					var roll = dice.Resolve(argument, defRoll)
-					api.SendReply(msg, roll.FormatReply(), "")
+					api.Reply(msg, roll.FormatReply())
 					fmt.Println("reply: ", roll.FormatReply())
 
+				} else if command[1] == "t" {
+					api.ReplyInlineKeyboard(msg)
+
 				} else {
-					// If the command is not in default values map, only option is help
-					api.SendReply(msg, dice.HELP, "MarkDown")
+					api.ReplyHelp(msg, dice.HELP)
 					fmt.Println("help provided")
 				}
 			}

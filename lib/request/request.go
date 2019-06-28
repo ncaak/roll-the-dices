@@ -2,7 +2,6 @@ package request
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/request/structs"
@@ -25,6 +24,8 @@ func Init(cfg config.API) api {
 	return api{client, cfg, fmt.Sprintf("%s%s/", cfg.BaseUrl, cfg.Token)}
 }
 
+// --- Responses ---
+
 // Sends a GET request to server to retrieve updates from the Offset
 // offset - Last retrieved update message Id
 func (api *api) GetUpdates(offset int) []structs.Result {
@@ -44,16 +45,35 @@ func (api *api) GetUpdates(offset int) []structs.Result {
 	return getParsedUpdates(resp)
 }
 
+// --- Requests ---
+
+// Sends a POST request to server to deliver the message with markdown style
+// message - Structure with the required fields to send the reply like Chat and Message indentifier
+// text - Messsae plain text to be sent as part of the reply
+func (api *api) ReplyHelp(message structs.Result, text string) {
+	api.sendMessage(markdownReply(message, text))
+}
+
+// Sends a POST request to server to deliver the message with an inline keyboard
+// message - Structure with the required fields to send the reply like Chat and Message indentifier
+func (api *api) ReplyInlineKeyboard(message structs.Result) {
+
+}
+
 // Sends a POST request to server to deliver the reply to a message
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
-// msgText - Messsae plain text to be sent as part of the reply
-// parse - Style type if the message has rich text
-func (api *api) SendReply(message structs.Result, msgText string, parse string) {
+// text - Messsae plain text to be sent as part of the reply
+func (api *api) Reply(message structs.Result, text string) {
+	api.sendMessage(textReply(message, text))
+}
+
+// Sends a POST request to server to deliver the message
+func (api *api) sendMessage(body *bytes.Buffer) {
 	// Prepare the request to send the reply to the server
 	req, err := http.NewRequest(
 		"POST",
 		fmt.Sprintf("%s%s", api.url, "sendMessage"),
-		getReplyBody(message, msgText, parse),
+		body,
 	)
 	if err != nil {
 		panic(err.Error())
@@ -71,19 +91,4 @@ func (api *api) send(r *http.Request) *http.Response {
 		panic(err.Error())
 	}
 	return resp
-}
-
-// Parse the response of GetUpdates request and model the data using Update structure
-func getParsedUpdates(response *http.Response) []structs.Result {
-	var updates = structs.Update{}
-	json.NewDecoder(response.Body).Decode(&updates)
-	return updates.Result
-}
-
-// Format the Reply using a struct and return the bytes object needed for the request
-func getReplyBody(msg structs.Result, msgText string, parse string) *bytes.Buffer {
-	var reply = structs.Reply{msg.GetChatId(), msgText, msg.GetReplyId(), parse}
-	jsonReply, _ := json.Marshal(reply)
-
-	return bytes.NewBuffer(jsonReply)
 }
