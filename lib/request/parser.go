@@ -7,21 +7,24 @@ import (
 	"net/http"
 )
 
+const KBD_MSG = "Escoge un dado para lanzar"
+const MARKDOWN = "MarkDown"
+
 // --- Responses ---
 
 // Returns a reply message with an inline keyboard
 func keyboardReply(r structs.Result) *bytes.Buffer {
-	return encodeReply(structs.Reply{r.GetChatId(), "", r.GetReplyId(), ""})
+	return encodeReply(structs.Reply{r.GetChatId(), KBD_MSG, r.GetReplyId(), "", structs.NewDiceKeyboard()})
 }
 
 // Returns a markdown format reply message
 func markdownReply(r structs.Result, text string) *bytes.Buffer {
-	return encodeReply(structs.Reply{r.GetChatId(), text, r.GetReplyId(), "MarkDown"})
+	return encodeReply(structs.Reply{r.GetChatId(), text, r.GetReplyId(), MARKDOWN, ""})
 }
 
 // Returns a plain text reply message
 func textReply(r structs.Result, text string) *bytes.Buffer {
-	return encodeReply(structs.Reply{r.GetChatId(), text, r.GetReplyId(), ""})
+	return encodeReply(structs.Reply{r.GetChatId(), text, r.GetReplyId(), "", ""})
 }
 
 // Auxiliar function to encode a structure and returning a buffer suited to be sent in a request
