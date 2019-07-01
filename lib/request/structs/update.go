@@ -1,5 +1,10 @@
 package structs
 
+import (
+	"encoding/json"
+	"io"
+)
+
 const COMMAND_TYPE = "bot_command"
 
 // Results structures retrieved from GetUpdates request
@@ -52,4 +57,13 @@ func (r *Result) IsCallback() (callback bool) {
 		callback = true
 	}
 	return
+}
+
+// Parse the response of GetUpdates request and model the data using Update structure
+func DecodeUpdates(str io.ReadCloser) []Result {
+	var updates = Update{}
+	if err := json.NewDecoder(str).Decode(&updates); err != nil {
+		panic(err.Error())
+	}
+	return updates.Result
 }

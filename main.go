@@ -50,6 +50,7 @@ func main() {
 				}
 			}
 		} else if msg.IsCallback() {
+			api.EditReplyKeyboard(msg)
 			fmt.Printf("%+v\n", msg)
 		}
 	}
