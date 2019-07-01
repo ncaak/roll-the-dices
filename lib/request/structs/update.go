@@ -8,45 +8,12 @@ const COMMAND_TYPE = "bot_command"
 // Update
 //	\--> Result
 //		\--> Message
-//			\--> Chat
-//			\--> Entities
-//			\--> From
+//		\--> Callback
 //
-type Chat struct {
-	FirstName string `json:"first_name"`
-	Id        int    `json:"id"`
-	LastName  string `json:"last_name"`
-	Type      string `json:"type"`
-	Username  string `json:"username"`
-}
-
-type Entities struct {
-	Length int    `json:"length"`
-	Offset int    `json:"offset"`
-	Type   string `json:"type"`
-}
-
-type From struct {
-	FirstName    string `json:"first_name"`
-	Id           int    `json:"id"`
-	IsBot        bool   `json:"is_bot"`
-	LanguageCode string `json:"language_code"`
-	LastName     string `json:"last_name"`
-	Username     string `json:"username"`
-}
-
-type Message struct {
-	Chat      Chat       `json:"chat"`
-	Date      int        `json:"date"`
-	Entities  []Entities `json:"entities"`
-	From      From       `json:"from"`
-	MessageId int        `json:"message_id"`
-	Text      string     `json:"text"`
-}
-
 type Result struct {
-	Message  Message `json:"message"`
-	UpdateId int     `json:"update_id"`
+	Message  message  `json:"message,omitempty"`
+	Callback callback `json:"callback_query,omitempty"`
+	UpdateId int      `json:"update_id"`
 }
 
 type Update struct {
@@ -75,6 +42,14 @@ func (result *Result) GetReplyId() int {
 func (result *Result) IsCommand() (command bool) {
 	if ent := result.Message.Entities; len(ent) > 0 && ent[0].Type == COMMAND_TYPE {
 		command = true
+	}
+	return
+}
+
+// Returns if a message is a callback type (inline keyboard response)
+func (r *Result) IsCallback() (callback bool) {
+	if r.Callback.Id != "" {
+		callback = true
 	}
 	return
 }

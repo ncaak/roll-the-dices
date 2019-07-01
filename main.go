@@ -19,9 +19,9 @@ func main() {
 	var settings = config.GetSettings(ENVIRONMENT)
 	var db = storage.Init(settings.DataBase)
 	var api = request.Init(settings.Api)
-	var messages = api.GetUpdates(db.GetOffset())
+	var results = api.GetUpdates(db.GetOffset())
 
-	for _, msg := range messages {
+	for _, msg := range results {
 
 		if msg.IsCommand() == true {
 			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
@@ -49,11 +49,13 @@ func main() {
 					fmt.Println("help provided")
 				}
 			}
+		} else if msg.IsCallback() {
+			fmt.Printf("%+v\n", msg)
 		}
 	}
 
-	if len(messages) > 0 {
-		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId+1)
+	if len(results) > 0 {
+		var newOffset = fmt.Sprintf("%d", results[len(results)-1].UpdateId+1)
 		db.SetOffset(newOffset)
 	}
 

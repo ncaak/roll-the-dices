@@ -23,7 +23,7 @@ type button struct {
 
 type row []button
 
-type InlineKeyboard struct {
+type inlineKeyboard struct {
 	Rows []row `json:"inline_keyboard"`
 }
 
@@ -47,6 +47,6 @@ func genDefaultButtons() (rw row) {
 	return
 }
 
-func genDefaultKeyboard() InlineKeyboard {
-	return InlineKeyboard{[]row{genDefaultButtons()}}
+func genDefaultKeyboard() inlineKeyboard {
+	return inlineKeyboard{[]row{genDefaultButtons()}}
 }
