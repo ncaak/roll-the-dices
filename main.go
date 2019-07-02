@@ -21,10 +21,10 @@ func main() {
 	var api = request.Init(settings.Api)
 	var results = api.GetUpdates(db.GetOffset())
 
-	for _, msg := range results {
+	for _, res := range results {
 
-		if msg.IsCommand() == true {
-			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
+		if res.IsCommand() == true {
+			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
@@ -37,21 +37,21 @@ func main() {
 				// Detects the command entered being a roll command
 				if defRoll := rollCommands[command[1]]; defRoll != "" {
 					var roll = dice.Resolve(argument, defRoll)
-					api.Reply(msg, roll.FormatReply())
+					api.Reply(res.Message, roll.FormatReply())
 					fmt.Println("reply: ", roll.FormatReply())
 
 				} else if command[1] == "t" {
-					api.ReplyInlineKeyboard(msg)
+					api.ReplyInlineKeyboard(res.Message)
 					fmt.Println("inline keyboard provided")
 
 				} else {
-					api.ReplyHelp(msg, dice.HELP)
+					api.ReplyHelp(res.Message, dice.HELP)
 					fmt.Println("help provided")
 				}
 			}
-		} else if msg.IsCallback() {
-			api.EditReplyKeyboard(msg)
-			fmt.Printf("%+v\n", msg)
+		} else if res.IsCallback() {
+			api.HideInlineKeyboard(res.Callback)
+			fmt.Printf("%+v\n", res)
 		}
 	}
 

@@ -16,14 +16,26 @@ type cbMessage struct {
 	From      from           `json:"from"`
 	MessageId int            `json:"message_id"`
 	Markup    inlineKeyboard `json:"reply_markup"`
-	ReplyMsg  message        `json:"reply_to_message"`
+	ReplyMsg  Message        `json:"reply_to_message"`
 	Text      string         `json:"text"`
 }
 
-type callback struct {
+type Callback struct {
 	ChatInst string    `json:"chat_instance"`
 	Data     string    `json:"data"`
 	From     from      `json:"from"`
 	Id       string    `json:"id"`
 	Message  cbMessage `json:"message"`
+}
+
+// --- Exported methods for the structure ---
+
+// Returning source Chat identifier to send the reply
+func (cb Callback) GetChatId() int {
+	return cb.Message.Chat.Id
+}
+
+// Returning source Message identifier to send the reply to the original sender
+func (cb Callback) GetReplyId() int {
+	return cb.Message.MessageId
 }

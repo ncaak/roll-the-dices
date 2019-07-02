@@ -20,24 +20,24 @@ type Reply struct {
 // Initializers
 
 // Returns a markdown format reply message
-func InitMarkdownReply(r Result, text string) *bytes.Buffer {
-	return encode(Reply{r.GetChatId(), text, r.GetReplyId(), MARKDOWN, ""})
+func InitMarkdownReply(m Msg, text string) *bytes.Buffer {
+	return Reply{m.GetChatId(), text, m.GetReplyId(), MARKDOWN, ""}.encode()
 }
 
 // Returns a reply message with an inline keyboard
-func InitKeyboardReply(r Result) *bytes.Buffer {
-	return encode(Reply{r.GetChatId(), KBD_MSG, r.GetReplyId(), "", NewDiceKeyboard()})
+func InitKeyboardReply(m Msg) *bytes.Buffer {
+	return Reply{m.GetChatId(), KBD_MSG, m.GetReplyId(), "", NewDiceKeyboard()}.encode()
 }
 
 // Returns a plain text reply message
-func InitReply(r Result, text string) *bytes.Buffer {
-	return encode(Reply{r.GetChatId(), text, r.GetReplyId(), "", ""})
+func InitReply(m Msg, text string) *bytes.Buffer {
+	return Reply{m.GetChatId(), text, m.GetReplyId(), "", ""}.encode()
 }
 
 // Auxiliar methods
 
 // Auxiliar function to encode a structure and returning a buffer suited to be sent in a request
-func encode(r Reply) *bytes.Buffer {
+func (r Reply) encode() *bytes.Buffer {
 	jsonReply, err := json.Marshal(r)
 	if err != nil {
 		panic(err.Error())

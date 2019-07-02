@@ -9,7 +9,7 @@ import (
 
 // Sends a GET request to server to retrieve updates from the Offset
 // offset - Last retrieved update message Id
-func (api api) GetUpdates(offset int) []structs.Result {
+func (api core) GetUpdates(offset int) []structs.Result {
 	var query = map[string]string{
 		"offset": fmt.Sprintf("%d", offset),
 	}
@@ -22,28 +22,28 @@ func (api api) GetUpdates(offset int) []structs.Result {
 
 // --- POST ---
 
-func (api api) EditReplyKeyboard(msg structs.Result) {
-	//
-	//		"POST",
-	//		fmt.Sprintf("%s%s", api.url, "editMessageReplyMarkup"),
+// Sends a POST request to server to edit a message with a keyboard to remove it
+// message - Structure with the required fields to send the reply like Chat and Message indentifier
+func (api core) HideInlineKeyboard(msg structs.Msg) {
+	api.post("editMessageReplyMarkup", structs.InitEditMarkupReply(msg))
 }
 
 // Sends a POST request to server to deliver the message with markdown style
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
 // text - Messsae plain text to be sent as part of the reply
-func (api api) ReplyHelp(msg structs.Result, text string) {
+func (api core) ReplyHelp(msg structs.Msg, text string) {
 	api.post("sendMessage", structs.InitMarkdownReply(msg, text))
 }
 
 // Sends a POST request to server to deliver the message with an inline keyboard
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
-func (api *api) ReplyInlineKeyboard(msg structs.Result) {
+func (api core) ReplyInlineKeyboard(msg structs.Msg) {
 	api.post("sendMessage", structs.InitKeyboardReply(msg))
 }
 
 // Sends a POST request to server to deliver the reply to a message
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
 // text - Messsae plain text to be sent as part of the reply
-func (api *api) Reply(msg structs.Result, text string) {
+func (api core) Reply(msg structs.Msg, text string) {
 	api.post("sendMessage", structs.InitReply(msg, text))
 }

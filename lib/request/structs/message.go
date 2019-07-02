@@ -1,5 +1,11 @@
 package structs
 
+// Interface for structs containing message information needed to send API requests
+type Msg interface {
+	GetChatId() int
+	GetReplyId() int
+}
+
 // Message structures find in Callback and Result structures
 //
 // Message
@@ -30,11 +36,23 @@ type from struct {
 	Username     string `json:"username"`
 }
 
-type message struct {
+type Message struct {
 	Chat      chat       `json:"chat"`
 	Date      int        `json:"date"`
 	Entities  []entities `json:"entities"`
 	From      from       `json:"from"`
 	MessageId int        `json:"message_id"`
 	Text      string     `json:"text"`
+}
+
+// --- Exported methods for the structure ---
+
+// Returning source Chat identifier to send the reply
+func (msg Message) GetChatId() int {
+	return msg.Chat.Id
+}
+
+// Returning source Message identifier to send the reply to the original sender
+func (msg Message) GetReplyId() int {
+	return msg.MessageId
 }
