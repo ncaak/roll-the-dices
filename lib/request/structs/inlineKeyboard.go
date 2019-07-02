@@ -42,7 +42,7 @@ func NewDiceKeyboard() string {
 
 func genDefaultButtons() (rw row) {
 	for _, die := range baseDice {
-		rw = append(rw, button{die, "callback"})
+		rw = append(rw, button{die, die})
 	}
 	return
 }

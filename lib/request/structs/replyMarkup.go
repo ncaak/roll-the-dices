@@ -9,14 +9,15 @@ import (
 type ReplyMarkup struct {
 	ChatId    int    `json:"chat_id"`
 	MessageId int    `json:"message_id"`
+	Text      string `json:"text"`
 	Markup    string `json:"reply_markup"`
 }
 
 // Initializers
 
 // Returns an edit reply message
-func InitEditMarkupReply(m Msg) *bytes.Buffer {
-	return ReplyMarkup{m.GetChatId(), m.GetReplyId(), ""}.encode()
+func InitEditMarkupReply(m Msg, text string) *bytes.Buffer {
+	return ReplyMarkup{m.GetChatId(), m.GetReplyId(), text, ""}.encode()
 }
 
 // Auxiliar methods

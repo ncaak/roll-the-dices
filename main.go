@@ -50,8 +50,9 @@ func main() {
 				}
 			}
 		} else if res.IsCallback() {
-			api.HideInlineKeyboard(res.Callback)
-			fmt.Printf("%+v\n", res)
+			// A callback is triggered when someone clicks an inline keyboard
+			var roll = dice.Resolve(res.Callback.Data, "1d20")
+			api.EditKeyboardReply(res.Callback, roll.FormatReply())
 		}
 	}
 

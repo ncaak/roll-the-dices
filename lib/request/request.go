@@ -24,8 +24,8 @@ func (api core) GetUpdates(offset int) []structs.Result {
 
 // Sends a POST request to server to edit a message with a keyboard to remove it
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
-func (api core) HideInlineKeyboard(msg structs.Msg) {
-	api.post("editMessageReplyMarkup", structs.InitEditMarkupReply(msg))
+func (api core) EditKeyboardReply(msg structs.Msg, text string) {
+	api.post("editMessageText", structs.InitEditMarkupReply(msg, text))
 }
 
 // Sends a POST request to server to deliver the message with markdown style
