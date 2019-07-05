@@ -1,55 +1,66 @@
 package main
 
 import (
-	"github.com/ncaak/roll-the-dices/lib/conn"
+	"fmt"
+	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/dice"
+	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
-	"fmt"
 	"regexp"
 	"strings"
 )
 
-var acceptedCommands = [...]string{"tira","v","dv"}
+const ENVIRONMENT = "ENV_DEV"
 
 func main() {
 	log.Println("beginning routine")
 
-	var offset = storage.GetUpdateOffset()
-	var messages = conn.GetUpdates(offset)
-	
-	for _, msg := range messages {
+	var settings = config.GetSettings(ENVIRONMENT)
+	var db = storage.Init(settings.DataBase)
+	var api = request.Init(settings.Api)
+	var results = api.GetUpdates(db.GetOffset())
 
-		if msg.IsCommand() == true {
-			var regexCommands = fmt.Sprintf("/(%s)(.*)", strings.Join(acceptedCommands[:], "|"))
-			var command = regexp.MustCompile(regexCommands).FindStringSubmatch(msg.GetCommand())
-			var reply string
+	for _, res := range results {
+
+		if res.IsCommand() == true {
+			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
-				switch command[1] {
-				case acceptedCommands[0]: // tira
-					reply, _ = dice.Resolve(argument, "1d20")
-
-				case acceptedCommands[1]: // v
-					reply, _ = dice.Resolve(argument, "h2d20")
-
-				case acceptedCommands[2]: // dv
-					reply, _ = dice.Resolve(argument, "l2d20")
+				var rollCommands = map[string]string{
+					"tira": "1d20",
+					"v":    "h2d20",
+					"dv":   "l2d20",
 				}
 
-				conn.SendReply(msg.Message.Chat.Id, reply, msg.Message.MessageId)
-				fmt.Println("reply: ", reply)
-			}
+				// Detects the command entered being a roll command
+				if defRoll := rollCommands[command[1]]; defRoll != "" {
+					var roll = dice.Resolve(argument, defRoll)
+					api.Reply(res.Message, roll.FormatReply())
+					fmt.Println("reply: ", roll.FormatReply())
 
+				} else if command[1] == "t" {
+					api.ReplyInlineKeyboard(res.Message)
+					fmt.Println("inline keyboard provided")
+
+				} else {
+					api.ReplyHelp(res.Message, dice.HELP)
+					fmt.Println("help provided")
+				}
+			}
+		} else if res.IsCallback() {
+			// A callback is triggered when someone clicks an inline keyboard
+			var roll = dice.Resolve(res.Callback.Data, "1d20")
+			api.EditKeyboardReply(res.Callback, roll.FormatReply())
 		}
 	}
 
-	if len(messages) > 0 {
-		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId +1)
-		storage.SetLastUpdateId(newOffset)
+	if len(results) > 0 {
+		var newOffset = fmt.Sprintf("%d", results[len(results)-1].UpdateId+1)
+		db.SetOffset(newOffset)
 	}
-	storage.Close()
 
+	db.Close()
 	log.Println("ending routine")
 }
