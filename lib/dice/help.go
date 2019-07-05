@@ -22,4 +22,8 @@ Equivale a /tira h2d20
 - */dv* (_bonos_) (_texto_)
 Alias para tirada de desventaja: el valor más bajo de dos dados de veinte caras.
 Equivale a /tira l2d20
+
+- */t*
+Despliega una botonera con las opciones más comunes de tiradas simples.
+Al pulsar uno de los botones resolverá la tirada correspondiente.
 `

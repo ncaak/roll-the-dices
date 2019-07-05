@@ -1,5 +1,10 @@
 package structs
 
+import (
+	"encoding/json"
+	"io"
+)
+
 const COMMAND_TYPE = "bot_command"
 
 // Results structures retrieved from GetUpdates request
@@ -8,45 +13,12 @@ const COMMAND_TYPE = "bot_command"
 // Update
 //	\--> Result
 //		\--> Message
-//			\--> Chat
-//			\--> Entities
-//			\--> From
+//		\--> Callback
 //
-type Chat struct {
-	FirstName string `json:"first_name"`
-	Id        int    `json:"id"`
-	LastName  string `json:"last_name"`
-	Type      string `json:"type"`
-	Username  string `json:"username"`
-}
-
-type Entities struct {
-	Length int    `json:"length"`
-	Offset int    `json:"offset"`
-	Type   string `json:"type"`
-}
-
-type From struct {
-	FirstName    string `json:"first_name"`
-	Id           int    `json:"id"`
-	IsBot        bool   `json:"is_bot"`
-	LanguageCode string `json:"language_code"`
-	LastName     string `json:"last_name"`
-	Username     string `json:"username"`
-}
-
-type Message struct {
-	Chat      Chat       `json:"chat"`
-	Date      int        `json:"date"`
-	Entities  []Entities `json:"entities"`
-	From      From       `json:"from"`
-	MessageId int        `json:"message_id"`
-	Text      string     `json:"text"`
-}
-
 type Result struct {
-	Message  Message `json:"message"`
-	UpdateId int     `json:"update_id"`
+	Message  Message  `json:"message,omitempty"`
+	Callback Callback `json:"callback_query,omitempty"`
+	UpdateId int      `json:"update_id"`
 }
 
 type Update struct {
@@ -56,19 +28,9 @@ type Update struct {
 
 // --- Exported methods for the structure ---
 
-// Returning source Chat identifier to send the reply
-func (result *Result) GetChatId() int {
-	return result.Message.Chat.Id
-}
-
 // Retrieves the message content filtered as it is supposed to be a command
 func (result *Result) GetCommand() string {
 	return result.Message.Text
-}
-
-// Returning source Message identifier to send the reply to the original sender
-func (result *Result) GetReplyId() int {
-	return result.Message.MessageId
 }
 
 // Returns if a message is a command or only another message type which will be ignored
@@ -77,4 +39,21 @@ func (result *Result) IsCommand() (command bool) {
 		command = true
 	}
 	return
+}
+
+// Returns if a message is a callback type (inline keyboard response)
+func (r *Result) IsCallback() (callback bool) {
+	if r.Callback.Id != "" {
+		callback = true
+	}
+	return
+}
+
+// Parse the response of GetUpdates request and model the data using Update structure
+func DecodeUpdates(str io.ReadCloser) []Result {
+	var updates = Update{}
+	if err := json.NewDecoder(str).Decode(&updates); err != nil {
+		panic(err.Error())
+	}
+	return updates.Result
 }

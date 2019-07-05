@@ -61,11 +61,18 @@ _Examples:_
 | dv -1 | 2d20[12 19]-1 = 11 |
 | dv Initiative | Initiative: 1d20[2 7]= 2 |
 
+**help**
+> Displays markdown text with help about the commands and how to use them. Currently only spanish available.
+
+**t**
+> Displays a button keyboard to allow user to enter basic commands without actually writing.
+
 ## Versioning
-Current stable version: v0.3.1-beta
+Current stable version: v0.4.1-beta
 #### Changelog
 | version |  notes |
 | --- | --- |
+| v0.4 | - Included _help_ and _t_ commands |
 | v0.3 | - Included new roll modifier to allow rolling any die number and taking any best die number |
 
 ## License

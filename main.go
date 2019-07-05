@@ -19,37 +19,45 @@ func main() {
 	var settings = config.GetSettings(ENVIRONMENT)
 	var db = storage.Init(settings.DataBase)
 	var api = request.Init(settings.Api)
-	var messages = api.GetUpdates(db.GetOffset())
+	var results = api.GetUpdates(db.GetOffset())
 
-	for _, msg := range messages {
+	for _, res := range results {
 
-		if msg.IsCommand() == true {
-			var command = regexp.MustCompile(`/(tira|v|dv|ayuda)(.*)`).FindStringSubmatch(msg.GetCommand())
+		if res.IsCommand() == true {
+			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
-				var defValues = map[string]string{
+				var rollCommands = map[string]string{
 					"tira": "1d20",
 					"v":    "h2d20",
 					"dv":   "l2d20",
 				}
 
-				if defRoll := defValues[command[1]]; defRoll != "" {
+				// Detects the command entered being a roll command
+				if defRoll := rollCommands[command[1]]; defRoll != "" {
 					var roll = dice.Resolve(argument, defRoll)
-					api.SendReply(msg, roll.FormatReply(), "")
+					api.Reply(res.Message, roll.FormatReply())
 					fmt.Println("reply: ", roll.FormatReply())
 
+				} else if command[1] == "t" {
+					api.ReplyInlineKeyboard(res.Message)
+					fmt.Println("inline keyboard provided")
+
 				} else {
-					// If the command is not in default values map, only option is help
-					api.SendReply(msg, dice.HELP, "MarkDown")
+					api.ReplyHelp(res.Message, dice.HELP)
 					fmt.Println("help provided")
 				}
 			}
+		} else if res.IsCallback() {
+			// A callback is triggered when someone clicks an inline keyboard
+			var roll = dice.Resolve(res.Callback.Data, "1d20")
+			api.EditKeyboardReply(res.Callback, roll.FormatReply())
 		}
 	}
 
-	if len(messages) > 0 {
-		var newOffset = fmt.Sprintf("%d", messages[len(messages)-1].UpdateId+1)
+	if len(results) > 0 {
+		var newOffset = fmt.Sprintf("%d", results[len(results)-1].UpdateId+1)
 		db.SetOffset(newOffset)
 	}
 
