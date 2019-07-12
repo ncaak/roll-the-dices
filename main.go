@@ -51,7 +51,7 @@ func main() {
 						api.ReplyInlineKeyboard(res.Message)
 						fmt.Println("inline keyboard provided")
 
-					case "help":
+					case "ayuda":
 						api.ReplyMarkdown(res.Message, dice.HELP)
 						fmt.Println("help provided")
 					}
