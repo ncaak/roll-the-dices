@@ -31,7 +31,7 @@ func (api core) EditKeyboardReply(msg structs.Msg, text string) {
 // Sends a POST request to server to deliver the message with markdown style
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
 // text - Messsae plain text to be sent as part of the reply
-func (api core) ReplyHelp(msg structs.Msg, text string) {
+func (api core) ReplyMarkdown(msg structs.Msg, text string) {
 	api.post("sendMessage", structs.InitMarkdownReply(msg, text))
 }
 

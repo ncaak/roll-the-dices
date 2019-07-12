@@ -24,7 +24,7 @@ func main() {
 	for _, res := range results {
 
 		if res.IsCommand() == true {
-			var command = regexp.MustCompile(`/(tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
+			var command = regexp.MustCompile(`/(agrupa|tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
@@ -38,15 +38,23 @@ func main() {
 				if defRoll := rollCommands[command[1]]; defRoll != "" {
 					var roll = dice.Resolve(argument, defRoll)
 					api.Reply(res.Message, roll.FormatReply())
-					fmt.Println("reply: ", roll.FormatReply())
-
-				} else if command[1] == "t" {
-					api.ReplyInlineKeyboard(res.Message)
-					fmt.Println("inline keyboard provided")
+					fmt.Println("reply provided")
 
 				} else {
-					api.ReplyHelp(res.Message, dice.HELP)
-					fmt.Println("help provided")
+					switch command[1] {
+					case "agrupa":
+						var roll = dice.Resolve(argument, "1d20")
+						api.ReplyMarkdown(res.Message, roll.RichReply())
+						fmt.Println("rich reply provided")
+
+					case "t":
+						api.ReplyInlineKeyboard(res.Message)
+						fmt.Println("inline keyboard provided")
+
+					case "help":
+						api.ReplyMarkdown(res.Message, dice.HELP)
+						fmt.Println("help provided")
+					}
 				}
 			}
 		} else if res.IsCallback() {
