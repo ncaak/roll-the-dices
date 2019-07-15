@@ -9,32 +9,32 @@ import (
 // * Retrieves every result of every check done
 // * Retrieves every bonus
 func (r *Roller) FormatReply() string {
-	var fmtReply strings.Builder
+	var str strings.Builder
 	if strings.TrimSpace(r.command) != "" {
-		fmtReply.WriteString(fmt.Sprintf("%s: ", strings.TrimSpace(r.command)))
+		fmt.Fprintf(&str, "%s: ", strings.TrimSpace(r.command))
 	}
 	// Finds every check and results to write it verbosely
 	for index, check := range r.checks {
 		// From the first item, following ones are included as a multiple roll
 		if index > 0 {
-			fmtReply.WriteString("+")
+			str.WriteString("+")
 		}
 		// Slices are represented with square brackets giving the following format: 1d20[1]
-		fmtReply.WriteString(fmt.Sprintf("%dd%d%d", check.dice, check.faces, check.results))
+		fmt.Fprintf(&str, "%dd%d%s", check.dice, check.faces, fSlice(check.results))
 
 	}
 	// Finds every bonus and writes it after the dice
 	for _, bonus := range r.bonus {
 		// Negative integers have the '-' symbol included, but positives one need to be appended to '+' symbol
 		if bonus > 0 {
-			fmtReply.WriteString("+")
+			str.WriteString("+")
 		}
-		fmtReply.WriteString(fmt.Sprintf("%d", bonus))
+		fmt.Fprintf(&str, "%d", bonus)
 	}
 	// Append equals symbol and the total sum of the roll
-	fmtReply.WriteString(fmt.Sprintf("= %d", r.total))
+	fmt.Fprintf(&str, "= %d", r.total)
 
-	return fmtReply.String()
+	return str.String()
 }
 
 // Generates a string with distributed results with markdown for an expected complex roll
@@ -59,6 +59,7 @@ func (r *Roller) RichReply() string {
 	return str.String()
 }
 
+// Formats a slice to standard string comma separated values
 func fSlice(slice []int) string {
 	var str strings.Builder
 	for _, value := range slice {
