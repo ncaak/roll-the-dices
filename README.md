@@ -39,6 +39,18 @@ _Examples:_
 | tira 1d20+3 Initiative | Initiative: 1d20[2]+3= 5 |
 | tira 2h6d10 Jump | Jump: 6d10[10 2 1 6 3 4]= 16 |
 
+**agrupa** [_dice_[_dice_[...]]] [_bonus_[_bonus_[...]]] [_tag_]
+> As _**tira**_ command but returning a riched MarkDown response with results distributed by _**dice**_ parameters.
+>
+_Example:_
+**command**: agrupa 1d10+2d6+7-1
+**result**: '
+`1d10[7]`: 7
+`2d6[1,5]`: 6
+_Bonus_ : 6
+**Total: 19**
+'
+
 **v** [_bonus_[_bonus_[...]]] [_tag_]
 > Resolves an advantage roll: Rolling two twenty-sided dice and taking the higher roll
 > 
