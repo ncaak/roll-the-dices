@@ -89,38 +89,6 @@ func (r *Roller) extractFromCommand(usedOrder string) {
 	r.command = strings.Replace(r.command, usedOrder, "", 1)
 }
 
-// Generates a String with a verbose result of the roll
-// * Retrieves every result of every check done
-// * Retrieves every bonus
-func (r *Roller) FormatReply() string {
-	var fmtReply strings.Builder
-	if strings.TrimSpace(r.command) != "" {
-		fmtReply.WriteString(fmt.Sprintf("%s: ", strings.TrimSpace(r.command)))
-	}
-	// Finds every check and results to write it verbosely
-	for index, check := range r.checks {
-		// From the first item, following ones are included as a multiple roll
-		if index > 0 {
-			fmtReply.WriteString("+")
-		}
-		// Slices are represented with square brackets giving the following format: 1d20[1]
-		fmtReply.WriteString(fmt.Sprintf("%dd%d%d", check.dice, check.faces, check.results))
-
-	}
-	// Finds every bonus and writes it after the dice
-	for _, bonus := range r.bonus {
-		// Negative integers have the '-' symbol included, but positives one need to be appended to '+' symbol
-		if bonus > 0 {
-			fmtReply.WriteString("+")
-		}
-		fmtReply.WriteString(fmt.Sprintf("%d", bonus))
-	}
-	// Append equals symbol and the total sum of the roll
-	fmtReply.WriteString(fmt.Sprintf("= %d", r.total))
-
-	return fmtReply.String()
-}
-
 // Generates results with given dices and die faces
 func (r *Roller) newCheck(dice int, faces int, action func([]int) int) {
 	var results = []int{}

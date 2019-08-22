@@ -15,6 +15,9 @@ _texto_
 (opcional)
 Usará el texto introducido como prefijo del resultado de la tirada
 
+- */agrupa* (_dados_) (_bonos_) (_texto_)
+Resuelve tiradas igual que el comando *tira* pero devuelve el resultado distribuido por bloques
+
 - */v* (_bonos_) (_texto_)
 Alias para tirada de ventaja: el valor más alto de dos dados de veinte caras.
 Equivale a /tira h2d20
