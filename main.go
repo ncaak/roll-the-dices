@@ -37,14 +37,14 @@ func main() {
 				// Detects the command entered being a roll command
 				if defRoll := rollCommands[command[1]]; defRoll != "" {
 					var roll = dice.Resolve(argument, defRoll)
-					api.Reply(res.Message, roll.FormatReply())
+					api.Reply(res.Message, roll.GetReply())
 					fmt.Println("reply provided")
 
 				} else {
 					switch command[1] {
 					case "agrupa":
-						var roll = dice.Resolve(argument, "1d20")
-						api.ReplyMarkdown(res.Message, roll.RichReply())
+						var roll = dice.Distribute(argument)
+						api.ReplyMarkdown(res.Message, roll.GetReply())
 						fmt.Println("rich reply provided")
 
 					case "t":
@@ -60,7 +60,7 @@ func main() {
 		} else if res.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
 			var roll = dice.Resolve(res.Callback.Data, "1d20")
-			api.EditKeyboardReply(res.Callback, roll.FormatReply())
+			api.EditKeyboardReply(res.Callback, roll.GetReply())
 		}
 	}
 
