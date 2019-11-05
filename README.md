@@ -17,14 +17,17 @@ _Examples_:
 - 3h6d10 (the three higher results of six dice of ten faces)
 
 **bonus**: `operator` `bonus quantifier`
->_Operator_ (*+* or *-*) should be indicated always, even if the command didn't use _dice_ parameters.
+>_Operator_ (*+* or *-*) should be indicated always, even if the command didn't use _dice_ parameters
 >
 _Examples_: +7. +3, -10, +1+3-2
 
 **tag**: `text`
->_Text_ could include any text but special symbols or _dice_ or _bonus_ nomenclature.
+>_Text_ could include any text but special symbols or _dice_ or _bonus_ nomenclature
 >
 _Examples_: Initiative, test, searching for someone, etc
+
+**custom tag**: `:text`
+>_Text_ could include any text but special symbols or _dice_ or _bonus_ nomenclature. This is only used in **agrupa** command meaning it is an enclosure for the previous _dice_ and _bonus_ parameters.
 
 ### Commands
 **tira** [_dice_[_dice_[...]]] [_bonus_[_bonus_[...]]] [_tag_]
@@ -37,19 +40,31 @@ _Examples:_
 | tira 1d10+7 | 1d10[7]+7= 14 |
 | tira +2 | 1d20[12]+2 = 14 |
 | tira 1d20+3 Initiative | Initiative: 1d20[2]+3= 5 |
-| tira 2h6d10 Jump | Jump: 6d10[10 2 1 6 3 4]= 16 |
+| tira 2h6d10 Jump | Jump: 6d10[10,2,1,6,3,4]= 16 |
 
-**agrupa** [_dice_[_dice_[...]]] [_bonus_[_bonus_[...]]] [_tag_]
-> As _**tira**_ command but returning a riched MarkDown response with results distributed by _**dice**_ parameters.
+**agrupa** [_dice_[_dice_[...]]] [_bonus_[_bonus_[...]]] [_custom_ | _tag_]
+> As _**tira**_ command but returning a riched MarkDown response with results distributed by _**dice**_ parameters or _**custom**_ tags
 >
 _Example:_
+
 **command**: agrupa 1d10+2d6+7-1
-**result**: '
-`1d10[7]`: 7
+
+**result**: `1d10[7]`: 7
+
 `2d6[1,5]`: 6
+
 _Bonus_ : 6
+
 **Total: 19**
-'
+
+
+_Example with custom tags:_
+
+**command**: agrupa 1d10+7:slashing+2d6:fire
+
+**result**: _slashing(10)_ = `1d10[3]+7`
+
+_fire(4)_ = `2d6[1,3]`
 
 **v** [_bonus_[_bonus_[...]]] [_tag_]
 > Resolves an advantage roll: Rolling two twenty-sided dice and taking the higher roll
@@ -58,9 +73,9 @@ _Examples:_
 
 | command | result |
 | --- | --- |
-| v +7 | 2d10[7 12]+7= 19 |
-| v -1 | 2d20[12 19]-1 = 18 |
-| v Initiative | Initiative: 1d20[2 7]= 7 |
+| v +7 | 2d10[7,12]+7= 19 |
+| v -1 | 2d20[12,19]-1 = 18 |
+| v Initiative | Initiative: 1d20[2,7]= 7 |
 
 **dv** [_bonus_[_bonus_[...]]] [_tag_]
 > Resolves a disadvantage roll: Rolling two twenty-sided dice and taking the lower roll
@@ -69,9 +84,9 @@ _Examples:_
 
 | command | result |
 | --- | --- |
-| dv +7 | 2d10[7 12]+7= 14 |
-| dv -1 | 2d20[12 19]-1 = 11 |
-| dv Initiative | Initiative: 1d20[2 7]= 2 |
+| dv +7 | 2d10[7,12]+7= 14 |
+| dv -1 | 2d20[12,19]-1 = 11 |
+| dv Initiative | Initiative: 1d20[2,7]= 2 |
 
 **help**
 > Displays markdown text with help about the commands and how to use them. Currently only spanish available.

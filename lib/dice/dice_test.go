@@ -86,7 +86,7 @@ func TestRollBasic(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test 2d20+1d6 roll
@@ -98,7 +98,7 @@ func TestRollMultiple(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}, {1, 6}}, []int{}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test default roll with no die
@@ -110,7 +110,7 @@ func TestRollDefault(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test 2d20+1d10+1d6 roll
@@ -122,7 +122,7 @@ func TestRollWhitespaces(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}, {1, 10}, {1, 6}}, []int{}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test flat +5 bonus
@@ -134,7 +134,7 @@ func TestBonusBasic(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{5}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test flat -3 bonus
@@ -146,7 +146,7 @@ func TestBonusNegative(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 10}}, []int{-3}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test multiple bonus
@@ -158,7 +158,7 @@ func TestBonusMultiple(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{7, -3}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test default bonus with no die
@@ -170,7 +170,7 @@ func TestBonusDefault(t *testing.T) {
 	var roller = Resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{4}, sliceSum())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test tagged roll
@@ -180,7 +180,7 @@ func TestTagBasic(t *testing.T) {
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
 	var roller = Resolve(test, "1d20")
-	var result = roller.FormatReply()
+	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
 	if !strings.Contains(result, "Initiative") {
@@ -196,7 +196,7 @@ func TestTagMultiple(t *testing.T) {
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]+7= d2' d2 = [8-27]")
 	var roller = Resolve(test, "1d20")
-	var result = roller.FormatReply()
+	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{7}, sliceSum())
 	if !strings.Contains(result, "Initiative") {
@@ -212,7 +212,7 @@ func TestTagDefalut(t *testing.T) {
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
 	var roller = Resolve(test, "1d20")
-	var result = roller.FormatReply()
+	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
 	if !strings.Contains(result, "Initiative") {
@@ -230,7 +230,7 @@ func TestAdvantageBasic(t *testing.T) {
 	var roller = Resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceHigher(1))
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test complex advantage roll
@@ -242,7 +242,7 @@ func TestAdvantageBonus(t *testing.T) {
 	var roller = Resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{7}, sliceHigher(1))
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test default advantage roll with no die
@@ -254,7 +254,7 @@ func TestAdvantageDefault(t *testing.T) {
 	var roller = Resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceHigher(1))
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test complex advantage roll with multiple higher rolls
@@ -266,7 +266,7 @@ func TestAdvantageComplex(t *testing.T) {
 	var roller = Resolve(test, "3h4d6")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{4, 6}}, []int{}, sliceHigher(3))
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test basic disadvantage roll
@@ -278,7 +278,7 @@ func TestDisadvantageBasic(t *testing.T) {
 	var roller = Resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceLower())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test complex disadvantage roll
@@ -290,7 +290,7 @@ func TestDisadvantageBonus(t *testing.T) {
 	var roller = Resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{6}, sliceLower())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
 
 // Test default disadvantage with no die
@@ -302,5 +302,5 @@ func TestDisadvantageDefault(t *testing.T) {
 	var roller = Resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceLower())
-	t.Logf("Result: %s", roller.FormatReply())
+	t.Logf("Result: %s", roller.GetReply())
 }
