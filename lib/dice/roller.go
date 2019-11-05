@@ -40,11 +40,12 @@ func (r *Roller) calcTotal() {
 // Extracts strings referring dice rolls from the command and add them as check items in a slice
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
 func (r *Roller) extractDice(defaultRoll string) {
-	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?P<arg>\d)?(?P<mod>[hl])?(?P<dice>\d+)d(?P<faces>\d+)`)
+	var regexDices = regexp.MustCompile(`[ ]*\+?[ ]*(?:(?P<arg>\d+)?(?P<mod>[hl]))?(?P<dice>\d+)d(?P<faces>\d+)`)
 	var matches = regexDices.FindAllStringSubmatch(r.command, -1)
 	// In case no die was found insert the defaultRoll as a pre-generated roll
 	if len(matches) == 0 && defaultRoll != "" {
 		r.command = fmt.Sprintf("%s%s", defaultRoll, r.command)
+		matches = regexDices.FindAllStringSubmatch(r.command, -1)
 	}
 
 	for _, match := range matches {
