@@ -3,20 +3,20 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ncaak/roll-the-dices/lib/config"
+	"log"
 )
 
 // Structures to handle operations with database
 type defaultDB struct {
-	table	string
-	column	string
+	table  string
+	column string
 }
 
 type dataBase struct {
-	core     *sql.DB
-	offset	 defaultDB
+	core   *sql.DB
+	offset defaultDB
 }
 
 // Initialize database opening it and saving settings retrieved from argument
@@ -52,4 +52,3 @@ func (db *dataBase) query(queryString string) *sql.Rows {
 func defineDB() defaultDB {
 	return defaultDB{"Updates", "offset"}
 }
-

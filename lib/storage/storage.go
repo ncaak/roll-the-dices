@@ -23,4 +23,3 @@ func (db *dataBase) GetOffset() (offset int) {
 func (db *dataBase) SetOffset(offset string) {
 	db.query(fmt.Sprintf("UPDATE %s SET %s=%s", db.offset.table, db.offset.column, offset))
 }
-

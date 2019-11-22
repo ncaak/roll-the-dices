@@ -14,9 +14,9 @@ type API struct {
 
 // Configuration structure to handle database properties
 type DB struct {
-	Type         string `json:"type"`
-	Credentials	 string `json:"cred"`
-	Access		 string `json:"access"`
+	Type        string `json:"type"`
+	Credentials string `json:"cred"`
+	Access      string `json:"access"`
 }
 
 // Configuration structure to be handled by other modules
