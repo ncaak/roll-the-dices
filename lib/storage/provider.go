@@ -20,9 +20,12 @@ type dataBase struct {
 }
 
 // Initialize database opening it and saving settings retrieved from argument
-func Init(cfg config.DB) dataBase {
+func Init(dbconf config.DB) dataBase {
 	// Opening the database allowing to send queries
-	db, err := sql.Open(cfg.Type, getInterface(cfg))
+	db, err := sql.Open(
+		dbconf.Type,
+		fmt.Sprintf("%s@%s", dbconf.Credentials, dbconf.Access),
+	)
 	if err != nil {
 		log.Println("[ERR] Connection with database failed")
 		panic(err.Error())
@@ -48,10 +51,5 @@ func (db *dataBase) query(queryString string) *sql.Rows {
 // Define table and column default names depending on provider default DB installation
 func defineDB() defaultDB {
 	return defaultDB{"Updates", "offset"}
-}
-
-// Returns interhace string needed in database/sql module to init a database
-func getInterface(cfg config.DB) string {
-	return fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.Name)
 }
 

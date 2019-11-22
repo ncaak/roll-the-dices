@@ -7,14 +7,13 @@ import (
 // Retrieves offset value saved into database previously
 // Uses SQL sentence: SELECT * FROM <TABLE>
 // <TABLE> is retrieved from configuration set on Initialization
-func (db *dataBase) GetOffset() int {
+func (db *dataBase) GetOffset() (offset int) {
 	var results = db.query(fmt.Sprintf("SELECT * FROM %s", db.offset.table))
 	// Retrieve offset value from query
-	var offset int
 	for results.Next() {
 		results.Scan(&offset)
 	}
-	return offset
+	return
 }
 
 // Saves offset value into database
