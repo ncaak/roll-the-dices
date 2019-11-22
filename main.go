@@ -14,12 +14,14 @@ import (
 const ENVIRONMENT = "ENV_DEV"
 
 func main() {
-	log.Println("beginning routine")
+	log.Println("[INF] Beginning routine")
 
 	var settings = config.GetSettings(ENVIRONMENT)
 	var db = storage.Init(settings.DataBase)
 	var api = request.Init(settings.Api)
 	var results = api.GetUpdates(db.GetOffset())
+
+	defer db.Close()
 
 	for _, res := range results {
 
@@ -69,6 +71,5 @@ func main() {
 		db.SetOffset(newOffset)
 	}
 
-	db.Close()
-	log.Println("ending routine")
+	log.Println("[INF] Ending routine")
 }

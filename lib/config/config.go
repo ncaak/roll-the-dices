@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 )
 
@@ -13,12 +14,9 @@ type API struct {
 
 // Configuration structure to handle database properties
 type DB struct {
-	Type         string `json:"type"`
-	User         string `json:"user"`
-	Pass         string `json:"pass"`
-	Name         string `json:"name"`
-	OffsetTable  string `json:"offset_table"`
-	OffsetColumn string `json:"offset_column"`
+	Type        string `json:"type"`
+	Credentials string `json:"cred"`
+	Access      string `json:"access"`
 }
 
 // Configuration structure to be handled by other modules
@@ -33,6 +31,7 @@ func GetSettings(env string) Config {
 	var settings = []byte(os.Getenv(env))
 
 	if err := json.Unmarshal(settings, &cfg); err != nil {
+		log.Println("[ERR] Retrieving configuration failed")
 		panic(err)
 	}
 	return cfg
