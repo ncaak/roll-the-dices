@@ -99,6 +99,7 @@ Current stable version: v0.5.0-beta
 #### Changelog
 | version |  notes |
 | --- | --- |
+| v0.6 | - Docker support |
 | v0.5 | - Included _agrupa_ command and performance improvement |
 | v0.4 | - Included _help_ and _t_ commands |
 | v0.3 | - Included new roll modifier to allow rolling any die number and taking any best die number |
