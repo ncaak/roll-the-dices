@@ -11,12 +11,10 @@ import (
 	"strings"
 )
 
-const ENVIRONMENT = "ENV_DEV"
-
 func main() {
 	log.Println("[INF] Beginning routine")
 
-	var settings = config.GetSettings(ENVIRONMENT)
+	var settings = config.GetSettings()
 	var db = storage.Init(settings.DataBase)
 	var api = request.Init(settings.Api)
 	var results = api.GetUpdates(db.GetOffset())

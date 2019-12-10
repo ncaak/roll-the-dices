@@ -8,6 +8,8 @@ import (
 	"log"
 )
 
+const DRIVER = "mysql"
+
 // Structures to handle operations with database
 type defaultDB struct {
 	table  string
@@ -22,10 +24,7 @@ type dataBase struct {
 // Initialize database opening it and saving settings retrieved from argument
 func Init(dbconf config.DB) dataBase {
 	// Opening the database allowing to send queries
-	db, err := sql.Open(
-		dbconf.Type,
-		fmt.Sprintf("%s@%s", dbconf.Credentials, dbconf.Access),
-	)
+	db, err := sql.Open(DRIVER, fmt.Sprintf("%s@%s", dbconf.Credentials, dbconf.Access))
 	if err != nil {
 		log.Println("[ERR] Connection with database failed")
 		panic(err.Error())
