@@ -1,38 +1,38 @@
 package config
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 )
 
 // Configuration structure to handle API properties
 type API struct {
-	BaseUrl string `json:"base_url"`
-	Token   string `json:"token"`
+	Url string
 }
 
 // Configuration structure to handle database properties
 type DB struct {
-	Type        string `json:"type"`
-	Credentials string `json:"cred"`
-	Access      string `json:"access"`
+	Credentials string
+	Access      string
 }
 
 // Configuration structure to be handled by other modules
 type Config struct {
-	Api      API `json:"api"`
-	DataBase DB  `json:"database"`
+	Api      API
+	DataBase DB
 }
 
 // Retrieves settings from environment variable and builds config structure
-func GetSettings(env string) Config {
+func GetSettings() Config {
 	var cfg = Config{}
-	var settings = []byte(os.Getenv(env))
 
-	if err := json.Unmarshal(settings, &cfg); err != nil {
+	cfg.Api.Url = os.Getenv("API_URL")
+	cfg.DataBase.Credentials = os.Getenv("DATABASE_CREDENTIALS")
+	cfg.DataBase.Access = os.Getenv("DATABASE_ACCESS")
+
+	if cfg.Api.Url == "" || cfg.DataBase.Credentials == "" || cfg.DataBase.Access == "" {
 		log.Println("[ERR] Retrieving configuration failed")
-		panic(err)
 	}
+
 	return cfg
 }

@@ -11,9 +11,8 @@ import (
 
 // Structure to handle operations with API
 type core struct {
-	client   *http.Client
-	settings config.API
-	url      string
+	client *http.Client
+	url    string
 }
 
 // Initialize client to http library package and prepare package structure to be used afterwards
@@ -21,11 +20,11 @@ func Init(cfg config.API) core {
 	var client = &http.Client{}
 	client.Timeout = 30 * time.Second
 
-	return core{client, cfg, fmt.Sprintf("%s%s/", cfg.BaseUrl, cfg.Token)}
+	return core{client, cfg.Url}
 }
 
 // Base GET request handler, returns response if no error is found
-func (api core) get(method string, query string) *http.Response {
+func (api *core) get(method string, query string) *http.Response {
 	var url = fmt.Sprintf("%s%s%s", api.url, method, query)
 	// Prepare the request to retrieve unreaded messages
 	req, err := http.NewRequest("GET", url, nil)
@@ -41,7 +40,7 @@ func (api core) get(method string, query string) *http.Response {
 }
 
 // Base POST request handler, returns response if no error is found
-func (api core) post(method string, body *bytes.Buffer) *http.Response {
+func (api *core) post(method string, body *bytes.Buffer) *http.Response {
 	var url = fmt.Sprintf("%s%s", api.url, method)
 	// Prepare the request to send the reply to the server
 	req, err := http.NewRequest("POST", url, body)
