@@ -22,7 +22,7 @@ RUN CGO_ENABLE=0 GOOS=linux go install -i ./...
 FROM debian:stable-slim
 
 # Environment variables with data for the app
-ENV ENV_DEV '{"api": {"base_url": "https://", "token": ""}}'
+ENV API_URL
 ENV DATABASE_ACCESS tcp(database)/database
 ENV DATABASE_CREDENTIALS user:pass
 
