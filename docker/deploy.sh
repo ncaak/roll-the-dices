@@ -48,6 +48,7 @@ initContainers()
         --add-host=$DATABASE_HOSTNAME:$db_container_ip \
         -e "DATABASE_ACCESS=tcp($DATABASE_HOSTNAME)/$build_db_name" \
         -e "DATABASE_CREDENTIALS=$build_db_user:$build_db_pass" \
+        --env-file api.env \
         $image_prefix-app:$version
 
     echo -e "\e[92m Container created\e[0m\n"
