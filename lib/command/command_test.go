@@ -5,14 +5,14 @@ import (
 )
 
 func TestResolveCommandOK(t *testing.T) {
-	_, err := ResolveOrError("/tira")
+	_, err := GetValidatedCommandOrError("/tira")
 	if err != nil {
 		t.Errorf("ERROR :: %s", err.Error())
 	}
 }
 
 func TestResolveCommandKO(t *testing.T) {
-	_, err := ResolveOrError("error")
+	_, err := GetValidatedCommandOrError("error")
 	if err == nil {
 		t.Error("ERROR :: No error was raised")
 	}

@@ -2,13 +2,14 @@ package command
 
 import (
 	"fmt"
-//	"github.com/ncaak/roll-the-dices/lib/dice"
+	//	"github.com/ncaak/roll-the-dices/lib/dice"
 	"regexp"
 	"strings"
 )
 
 type baseCommand struct {
-	resolve func() string
+	Resolve   func() string
+	SendReply func()
 }
 
 func validCommands() string {
@@ -26,21 +27,11 @@ func getCommand(inputCmd string, arg string) (cmd baseCommand) {
 	return cmd
 }
 
-func getValidatedCommandOrError(input string) (baseCommand, error) {
+func GetValidatedCommandOrError(input string) (baseCommand, error) {
 	var match = regexp.MustCompile(validCommands()).FindStringSubmatch(input)
 	if len(match) == 0 {
 		return baseCommand{}, fmt.Errorf("Received command is not valid")
 	}
 
 	return getCommand(match[1], match[2]), nil
-}
-
-func ResolveOrError(input string) (string, error) {
-	// Command validation and structure initialization
-	cmd, err := getValidatedCommandOrError(input)
-	if err != nil {
-		return "", err
-	}
-
-	return cmd.resolve(), err
 }
