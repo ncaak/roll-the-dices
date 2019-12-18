@@ -2,14 +2,13 @@ package command
 
 import (
 	"fmt"
-	"github.com/ncaak/roll-the-dices/lib/dice"
+//	"github.com/ncaak/roll-the-dices/lib/dice"
 	"regexp"
 	"strings"
 )
 
 type baseCommand struct {
-	result  string
-	resolve func() dice.Roller
+	resolve func() string
 }
 
 func validCommands() string {
@@ -36,15 +35,12 @@ func getValidatedCommandOrError(input string) (baseCommand, error) {
 	return getCommand(match[1], match[2]), nil
 }
 
-func ResolveOrError(input string) (baseCommand, error) {
+func ResolveOrError(input string) (string, error) {
 	// Command validation and structure initialization
 	cmd, err := getValidatedCommandOrError(input)
 	if err != nil {
-		return cmd, err
+		return "", err
 	}
 
-	roll := cmd.resolve()
-	cmd.result = roll.GetReply()
-
-	return cmd, err
+	return cmd.resolve(), err
 }
