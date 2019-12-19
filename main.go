@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	C "github.com/ncaak/roll-the-dices/lib/command"
 	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/request"
@@ -24,12 +25,21 @@ func main() {
 	for _, res := range results {
 
 		if res.IsCommand() == true {
+//////
+			cmd, err := C.GetValidatedCommandOrError(res)
+			if err != nil {
+				log.Println("[WRN] " + err.Error())
+
+			} else {
+				cmd.Send(api)
+			}
+//////
 			var command = regexp.MustCompile(`/(agrupa|tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
 				var rollCommands = map[string]string{
-					"tira": "1d20",
+//					"tira": "1d20",
 					"v":    "h2d20",
 					"dv":   "l2d20",
 				}
