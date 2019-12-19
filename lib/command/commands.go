@@ -5,6 +5,7 @@ import (
 )
 
 func NewTira(arg string) (c baseCommand) {
-	c.resolve = aspectBasicRoll(arg, "1d20")
+	c.resolve = resolveBasicRoll(arg, "1d20")
+	c.send = sendBasicReply()
 	return
 }
