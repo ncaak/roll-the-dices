@@ -5,10 +5,6 @@ import (
 	"github.com/ncaak/roll-the-dices/lib/request/structs"
 )
 
-type Request interface {
-	BasicReply(structs.Msg, string)
-}
-
 // --- GET ---
 
 // Sends a GET request to server to retrieve updates from the Offset
@@ -52,6 +48,6 @@ func (api core) Reply(msg structs.Msg, text string) {
 	api.post("sendMessage", structs.InitReply(msg, text))
 }
 
-func (api core) BasicReply(msg structs.Msg, text string) {
-	api.post("sendMessage", structs.InitReply(msg, text))
+func (api core) BasicReply(chatId int, replyId int, text string) {
+	api.post("sendMessage", structs.TestReply(chatId, replyId, text))
 }

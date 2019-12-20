@@ -34,6 +34,14 @@ func InitReply(m Msg, text string) *bytes.Buffer {
 	return Reply{m.GetChatId(), text, m.GetReplyId(), "", ""}.encode()
 }
 
+func TestReply(chatId int, replyId int, text string) *bytes.Buffer {
+	var reply Reply
+	reply.ChatId = chatId
+	reply.ReplyId = replyId
+	reply.Text = text
+	return reply.encode()
+}
+
 // Auxiliar methods
 
 // Auxiliar function to encode a structure and returning a buffer suited to be sent in a request

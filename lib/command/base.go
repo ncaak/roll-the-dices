@@ -2,16 +2,31 @@ package command
 
 import (
 	"fmt"
-	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/request/structs"
 	"regexp"
 	"strings"
 )
 
+/*
+ * Interfaces to be used
+ * Request interface communicates with API to send replies to the server
+ * Msg interface communicates with structures needed to extract information to use with the API
+ */
+type Request interface {
+	BasicReply(int, int, string)
+}
+type Source interface {
+	GetChatId() int
+	GetReplyId() int
+}
+
+/*
+ *
+ */
 type baseCommand struct {
-	source	structs.Message
-	resolve   func() string
-	send	func(request.Request, structs.Msg, string)
+	source  Source
+	resolve func() string
+	send    func(Request, Source, string)
 }
 
 func validCommands() string {
@@ -41,8 +56,7 @@ func GetValidatedCommandOrError(input structs.Result) (baseCommand, error) {
 	return command, nil
 }
 
-
-func (c baseCommand) Send (api request.Request) {
+func (c baseCommand) Send(api Request) {
 	var roll = c.resolve()
 
 	c.send(api, c.source, roll)
