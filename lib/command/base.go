@@ -21,7 +21,8 @@ type Source interface {
 }
 
 /*
- *
+ * Structure used to handle commands
+ * resolve and send methods are mutable and they depend on structure initializers
  */
 type baseCommand struct {
 	source  Source
@@ -29,6 +30,17 @@ type baseCommand struct {
 	send    func(Request, Source, string)
 }
 
+// Unique entry point to handle every command
+func (c baseCommand) Send(api Request) {
+	var roll = c.resolve()
+
+	c.send(api, c.source, roll)
+}
+
+/*
+ * Common library functions
+ * Validators and Initializers orchestrator
+ */
 func validCommands() string {
 	var VALID_COMMANDS = [...]string{"tira"}
 	return fmt.Sprintf("/(%s)(.*)", strings.Join(VALID_COMMANDS[:], "|"))
@@ -44,6 +56,7 @@ func getCommand(inputCmd string, arg string) (cmd baseCommand) {
 	return cmd
 }
 
+// Library main method to validate commands and initialize structure with required functionality
 func GetValidatedCommandOrError(input structs.Result) (baseCommand, error) {
 	var match = regexp.MustCompile(validCommands()).FindStringSubmatch(input.GetCommand())
 	if len(match) == 0 {
@@ -54,10 +67,4 @@ func GetValidatedCommandOrError(input structs.Result) (baseCommand, error) {
 	command.source = input.Message
 
 	return command, nil
-}
-
-func (c baseCommand) Send(api Request) {
-	var roll = c.resolve()
-
-	c.send(api, c.source, roll)
 }

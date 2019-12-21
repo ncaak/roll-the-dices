@@ -17,7 +17,10 @@ type Reply struct {
 	Markup  string `json:"reply_markup"`
 }
 
-// Initializers
+/*
+ * Structure initializers
+ * Returns encoded structures to use within request library
+ */
 
 // Returns a markdown format reply message
 func InitMarkdownReply(m Msg, text string) *bytes.Buffer {
@@ -29,20 +32,24 @@ func InitKeyboardReply(m Msg) *bytes.Buffer {
 	return Reply{m.GetChatId(), KBD_MSG, m.GetReplyId(), "", NewDiceKeyboard()}.encode()
 }
 
+// Deprecated
 // Returns a plain text reply message
 func InitReply(m Msg, text string) *bytes.Buffer {
 	return Reply{m.GetChatId(), text, m.GetReplyId(), "", ""}.encode()
 }
 
-func TestReply(chatId int, replyId int, text string) *bytes.Buffer {
-	var reply Reply
-	reply.ChatId = chatId
-	reply.ReplyId = replyId
-	reply.Text = text
-	return reply.encode()
+// Returns a reply with a simple unformatted text
+func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
+	var r Reply
+	r.ChatId = chatId
+	r.ReplyId = replyId
+	r.Text = text
+	return r.encode()
 }
 
-// Auxiliar methods
+/*
+ * Structure methods
+ */
 
 // Auxiliar function to encode a structure and returning a buffer suited to be sent in a request
 func (r Reply) encode() *bytes.Buffer {
