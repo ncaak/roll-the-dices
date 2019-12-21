@@ -34,23 +34,10 @@ func main() {
 				cmd.Send(api)
 			}
 //////
-			var command = regexp.MustCompile(`/(agrupa|tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
+			var command = regexp.MustCompile(`/(agrupa|t|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
-				var rollCommands = map[string]string{
-//					"tira": "1d20",
-					"v":    "h2d20",
-					"dv":   "l2d20",
-				}
-
-				// Detects the command entered being a roll command
-				if defRoll := rollCommands[command[1]]; defRoll != "" {
-					var roll = dice.Resolve(argument, defRoll)
-					api.Reply(res.Message, roll.GetReply())
-					fmt.Println("reply provided")
-
-				} else {
 					switch command[1] {
 					case "agrupa":
 						var roll = dice.Distribute(argument)
@@ -65,7 +52,7 @@ func main() {
 						api.ReplyMarkdown(res.Message, dice.HELP)
 						fmt.Println("help provided")
 					}
-				}
+				
 			}
 		} else if res.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard

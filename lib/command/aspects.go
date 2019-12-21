@@ -32,3 +32,15 @@ func NewTira(arg string) (c baseCommand) {
 	c.send = sendBasicReply()
 	return
 }
+
+func NewV(arg string) (c baseCommand) {
+	c.resolve = resolveBasicRoll(arg, "h2d20")
+	c.send = sendBasicReply()
+	return
+}
+
+func NewDv(arg string) (c baseCommand) {
+	c.resolve = resolveBasicRoll(arg, "l2d20")
+	c.send = sendBasicReply()
+	return
+}
