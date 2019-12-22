@@ -34,7 +34,7 @@ func main() {
 				cmd.Send(api)
 			}
 //////
-			var command = regexp.MustCompile(`/(agrupa|t|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
+			var command = regexp.MustCompile(`/(agrupa|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
 			if len(command) > 0 {
 				var argument = strings.TrimSpace(command[2])
@@ -43,11 +43,6 @@ func main() {
 						var roll = dice.Distribute(argument)
 						api.ReplyMarkdown(res.Message, roll.GetReply())
 						fmt.Println("rich reply provided")
-
-					case "t":
-						api.ReplyInlineKeyboard(res.Message)
-						fmt.Println("inline keyboard provided")
-
 					case "ayuda":
 						api.ReplyMarkdown(res.Message, dice.HELP)
 						fmt.Println("help provided")

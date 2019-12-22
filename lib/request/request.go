@@ -40,6 +40,7 @@ func (api core) ReplyMarkdown(msg structs.Msg, text string) {
 	api.post("sendMessage", structs.InitMarkdownReply(msg, text))
 }
 
+// Deprecated
 // Sends a POST request to server to deliver the message with an inline keyboard
 // message - Structure with the required fields to send the reply like Chat and Message indentifier
 func (api core) ReplyInlineKeyboard(msg structs.Msg) {
@@ -57,4 +58,9 @@ func (api core) Reply(msg structs.Msg, text string) {
 // Sends an unformatted basic reply
 func (api core) BasicReply(chatId int, replyId int, text string) {
 	api.post("sendMessage", structs.InitBasicReply(chatId, replyId, text))
+}
+
+// Sends an unformatted reply with a Inline Keyboard parsed within
+func (api core) KeyboardReply(chatId int, replyId int) {
+	api.post("sendMessage", structs.InitKeyboard(chatId, replyId))
 }

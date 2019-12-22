@@ -16,9 +16,21 @@ func resolveBasicRoll(input string, defaultRoll string) func() string {
 	}
 }
 
+func resolveNoRoll() func() string {
+	return func() string {
+		return ""
+	}
+}
+
 func sendBasicReply() func(Request, Source, string) {
 	return func(api Request, source Source, roll string) {
 		api.BasicReply(source.GetChatId(), source.GetReplyId(), roll)
+	}
+}
+
+func sendKeyboard() func(Request, Source, string) {
+	return func(api Request, source Source, _ string) {
+		api.KeyboardReply(source.GetChatId(), source.GetReplyId())
 	}
 }
 
@@ -42,5 +54,11 @@ func NewV(arg string) (c baseCommand) {
 func NewDv(arg string) (c baseCommand) {
 	c.resolve = resolveBasicRoll(arg, "l2d20")
 	c.send = sendBasicReply()
+	return
+}
+
+func NewT(arg string) (c baseCommand) {
+	c.resolve = resolveNoRoll()
+	c.send = sendKeyboard()
 	return
 }

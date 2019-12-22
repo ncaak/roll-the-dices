@@ -22,11 +22,19 @@ type Reply struct {
  * Returns encoded structures to use within request library
  */
 
+// Main structure initializer with basic data
+func initReply(chatId int, replyId int) (r Reply) {
+	r.ChatId = chatId
+	r.ReplyId = replyId
+	return
+}
+
 // Returns a markdown format reply message
 func InitMarkdownReply(m Msg, text string) *bytes.Buffer {
 	return Reply{m.GetChatId(), text, m.GetReplyId(), MARKDOWN, ""}.encode()
 }
 
+// Deprecated
 // Returns a reply message with an inline keyboard
 func InitKeyboardReply(m Msg) *bytes.Buffer {
 	return Reply{m.GetChatId(), KBD_MSG, m.GetReplyId(), "", NewDiceKeyboard()}.encode()
@@ -40,10 +48,16 @@ func InitReply(m Msg, text string) *bytes.Buffer {
 
 // Returns a reply with a simple unformatted text
 func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
-	var r Reply
-	r.ChatId = chatId
-	r.ReplyId = replyId
+	var r = initReply(chatId, replyId)
 	r.Text = text
+	return r.encode()
+}
+
+// Returns a reply with an inline keyboard
+func InitKeyboard(chatId int, replyId int) *bytes.Buffer {
+	var r = initReply(chatId, replyId)
+	r.Text = KBD_MSG
+	r.Markup = NewDiceKeyboard()
 	return r.encode()
 }
 
