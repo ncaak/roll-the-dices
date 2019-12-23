@@ -29,24 +29,6 @@ func initReply(chatId int, replyId int) (r Reply) {
 	return
 }
 
-// Deprecated
-// Returns a markdown format reply message
-func InitMarkdownReply(m Msg, text string) *bytes.Buffer {
-	return Reply{m.GetChatId(), text, m.GetReplyId(), MARKDOWN, ""}.encode()
-}
-
-// Deprecated
-// Returns a reply message with an inline keyboard
-func InitKeyboardReply(m Msg) *bytes.Buffer {
-	return Reply{m.GetChatId(), KBD_MSG, m.GetReplyId(), "", NewDiceKeyboard()}.encode()
-}
-
-// Deprecated
-// Returns a plain text reply message
-func InitReply(m Msg, text string) *bytes.Buffer {
-	return Reply{m.GetChatId(), text, m.GetReplyId(), "", ""}.encode()
-}
-
 // Returns a reply with a simple unformatted text
 func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
 	var r = initReply(chatId, replyId)
