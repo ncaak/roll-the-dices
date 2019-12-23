@@ -16,6 +16,13 @@ func resolveBasicRoll(input string, defaultRoll string) func() string {
 	}
 }
 
+func resolveDistRoll(input string) func() string {
+	return func() string {
+		var roller = dice.Distribute(input)
+		return roller.GetReply()
+	}
+}
+
 func resolveNoRoll() func() string {
 	return func() string {
 		return ""
@@ -31,6 +38,12 @@ func sendBasicReply() func(Request, Source, string) {
 func sendKeyboard() func(Request, Source, string) {
 	return func(api Request, source Source, _ string) {
 		api.KeyboardReply(source.GetChatId(), source.GetReplyId())
+	}
+}
+
+func sendMarkdownReply() func(Request, Source, string) {
+	return func(api Request, source Source, roll string) {
+		api.MarkdownReply(source.GetChatId(), source.GetReplyId(), roll)
 	}
 }
 
@@ -60,5 +73,11 @@ func NewDv(arg string) (c baseCommand) {
 func NewT(arg string) (c baseCommand) {
 	c.resolve = resolveNoRoll()
 	c.send = sendKeyboard()
+	return
+}
+
+func NewAgrupa(arg string) (c baseCommand) {
+	c.resolve = resolveDistRoll(arg)
+	c.send = sendMarkdownReply()
 	return
 }

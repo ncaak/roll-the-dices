@@ -15,6 +15,7 @@ import (
 type Request interface {
 	BasicReply(int, int, string)
 	KeyboardReply(int, int)
+	MarkdownReply(int, int, string)
 }
 type Source interface {
 	GetChatId() int
@@ -43,7 +44,7 @@ func (c baseCommand) Send(api Request) {
  * Validators and Initializers orchestrator
  */
 func validCommands() string {
-	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t"}
+	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa"}
 	return fmt.Sprintf("/(%s)(.*)", strings.Join(VALID_COMMANDS[:], "|"))
 }
 
@@ -58,6 +59,8 @@ func getCommand(inputCmd string, arg string) (cmd baseCommand) {
 		cmd = NewDv(argument)
 	case "t":
 		cmd = NewT(argument)
+	case "agrupa":
+		cmd = NewAgrupa(argument)
 	}
 	return cmd
 }

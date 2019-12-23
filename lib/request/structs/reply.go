@@ -29,6 +29,7 @@ func initReply(chatId int, replyId int) (r Reply) {
 	return
 }
 
+// Deprecated
 // Returns a markdown format reply message
 func InitMarkdownReply(m Msg, text string) *bytes.Buffer {
 	return Reply{m.GetChatId(), text, m.GetReplyId(), MARKDOWN, ""}.encode()
@@ -58,6 +59,14 @@ func InitKeyboard(chatId int, replyId int) *bytes.Buffer {
 	var r = initReply(chatId, replyId)
 	r.Text = KBD_MSG
 	r.Markup = NewDiceKeyboard()
+	return r.encode()
+}
+
+// Returns a reply with markdown formatted text
+func InitMarkdown(chatId int, replyId int, text string) *bytes.Buffer {
+	var r = initReply(chatId, replyId)
+	r.Text = text
+	r.Parse = MARKDOWN
 	return r.encode()
 }
 
