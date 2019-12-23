@@ -23,6 +23,12 @@ func resolveDistRoll(input string) func() string {
 	}
 }
 
+func resolveHelp() func() string {
+	return func() string {
+		return dice.HELP
+	}
+}
+
 func resolveNoRoll() func() string {
 	return func() string {
 		return ""
@@ -70,7 +76,7 @@ func NewDv(arg string) (c baseCommand) {
 	return
 }
 
-func NewT(arg string) (c baseCommand) {
+func NewT(_ string) (c baseCommand) {
 	c.resolve = resolveNoRoll()
 	c.send = sendKeyboard()
 	return
@@ -78,6 +84,12 @@ func NewT(arg string) (c baseCommand) {
 
 func NewAgrupa(arg string) (c baseCommand) {
 	c.resolve = resolveDistRoll(arg)
+	c.send = sendMarkdownReply()
+	return
+}
+
+func NewAyuda(_ string) (c baseCommand) {
+	c.resolve = resolveHelp()
 	c.send = sendMarkdownReply()
 	return
 }

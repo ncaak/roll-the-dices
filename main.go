@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
-	C "github.com/ncaak/roll-the-dices/lib/command"
+	"github.com/ncaak/roll-the-dices/lib/command"
 	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
-	"regexp"
-	"strings"
 )
 
 func main() {
@@ -25,30 +23,14 @@ func main() {
 	for _, res := range results {
 
 		if res.IsCommand() == true {
-//////
-			cmd, err := C.GetValidatedCommandOrError(res)
+			cmd, err := command.GetValidatedCommandOrError(res)
 			if err != nil {
 				log.Println("[WRN] " + err.Error())
 
 			} else {
 				cmd.Send(api)
 			}
-//////
-			var command = regexp.MustCompile(`/(agrupa|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
 
-			if len(command) > 0 {
-				var argument = strings.TrimSpace(command[2])
-					switch command[1] {
-					case "agrupa":
-						var roll = dice.Distribute(argument)
-						api.ReplyMarkdown(res.Message, roll.GetReply())
-						fmt.Println("rich reply provided")
-					case "ayuda":
-						api.ReplyMarkdown(res.Message, dice.HELP)
-						fmt.Println("help provided")
-					}
-				
-			}
 		} else if res.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
 			var roll = dice.Resolve(res.Callback.Data, "1d20")

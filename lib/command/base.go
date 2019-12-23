@@ -44,7 +44,7 @@ func (c baseCommand) Send(api Request) {
  * Validators and Initializers orchestrator
  */
 func validCommands() string {
-	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa"}
+	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda"}
 	return fmt.Sprintf("/(%s)(.*)", strings.Join(VALID_COMMANDS[:], "|"))
 }
 
@@ -61,6 +61,8 @@ func getCommand(inputCmd string, arg string) (cmd baseCommand) {
 		cmd = NewT(argument)
 	case "agrupa":
 		cmd = NewAgrupa(argument)
+	case "ayuda":
+		cmd = NewAyuda(argument)
 	}
 	return cmd
 }
