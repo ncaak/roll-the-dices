@@ -28,15 +28,17 @@ type Source interface {
  */
 type baseCommand struct {
 	source  Source
-	resolve func() string
+	resolve func() (string, error)
 	send    func(Request, Source, string)
 }
 
 // Unique entry point to handle every command
-func (c baseCommand) Send(api Request) {
-	var roll = c.resolve()
-
-	c.send(api, c.source, roll)
+func (c baseCommand) Run(api Request) error {
+	var roll, err = c.resolve()
+	if err == nil {
+		c.send(api, c.source, roll)
+	}
+	return err
 }
 
 /*
@@ -44,7 +46,7 @@ func (c baseCommand) Send(api Request) {
  * Validators and Initializers orchestrator
  */
 func validCommands() string {
-	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda"}
+	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda", "repite"}
 	return fmt.Sprintf("/(%s)(.*)", strings.Join(VALID_COMMANDS[:], "|"))
 }
 
@@ -63,6 +65,8 @@ func getCommand(inputCmd string, arg string) (cmd baseCommand) {
 		cmd = NewAgrupa(argument)
 	case "ayuda":
 		cmd = NewAyuda(argument)
+	case "repite":
+		cmd = NewRepite(argument)
 	}
 	return cmd
 }

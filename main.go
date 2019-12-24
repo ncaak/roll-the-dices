@@ -28,7 +28,10 @@ func main() {
 				log.Println("[WRN] " + err.Error())
 
 			} else {
-				cmd.Send(api)
+				errCmd := cmd.Run(api)
+				if errCmd != nil {
+					log.Println("[ERR] " + errCmd.Error())
+				}
 			}
 
 		} else if res.IsCallback() {
