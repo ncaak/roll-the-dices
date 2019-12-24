@@ -52,3 +52,16 @@ func Distribute(command string) (roller Roller) {
 
 	return
 }
+
+func Repeat(command string) (Roller, error) {
+	var regexDices = regexp.MustCompile(`(?P<rpt>^\d+) (?P<cmd>.*)?`)
+	var matches = regexDices.FindStringSubmatch(command)
+
+	if len(matches) == 0 {
+		return Roller{}, fmt.Errorf("Input was not valid")
+	}
+
+	fmt.Println(getMapRegexGroups(regexDices.SubexpNames(), matches))
+
+	return Roller{}, nil
+}
