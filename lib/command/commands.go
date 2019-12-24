@@ -9,32 +9,44 @@ import (
  * It adds polymorphism for the different commands
  */
 
-func resolveBasicRoll(input string, defaultRoll string) func() string {
-	return func() string {
+// Roll resolving functions
+func resolveBasicRoll(input string, defaultRoll string) func() (string, error) {
+	return func() (string, error) {
 		var roller = dice.Resolve(input, defaultRoll)
-		return roller.GetReply()
+		return roller.GetReply(), nil // TODO - Handle Resolve errors
 	}
 }
 
-func resolveDistRoll(input string) func() string {
-	return func() string {
+func resolveDistRoll(input string) func() (string, error) {
+	return func() (string, error) {
 		var roller = dice.Distribute(input)
-		return roller.GetReply()
+		return roller.GetReply(), nil // TODO - Handle Resolve errors
 	}
 }
 
-func resolveHelp() func() string {
-	return func() string {
-		return dice.HELP
+func resolveReptRoll(input string) func() (string, error) {
+	return func() (string, error) {
+		var roller, err = dice.Repeat(input)
+		if err != nil {
+			return "", err
+		}
+		return roller.GetReply(), nil
 	}
 }
 
-func resolveNoRoll() func() string {
-	return func() string {
-		return ""
+func resolveHelp() func() (string, error) {
+	return func() (string, error) {
+		return dice.HELP, nil
 	}
 }
 
+func resolveNoRoll() func() (string, error) {
+	return func() (string, error) {
+		return "", nil
+	}
+}
+
+// Replies to API functions
 func sendBasicReply() func(Request, Source, string) {
 	return func(api Request, source Source, roll string) {
 		api.BasicReply(source.GetChatId(), source.GetReplyId(), roll)
@@ -91,5 +103,11 @@ func NewAgrupa(arg string) (c baseCommand) {
 func NewAyuda(_ string) (c baseCommand) {
 	c.resolve = resolveHelp()
 	c.send = sendMarkdownReply()
+	return
+}
+
+func NewRepite(arg string) (c baseCommand) {
+	c.resolve = resolveReptRoll(arg)
+	c.send = sendBasicReply()
 	return
 }
