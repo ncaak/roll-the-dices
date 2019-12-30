@@ -50,6 +50,19 @@ func (r *Roller) getDistributeReplyComponent(key string) string {
 	return str.String() + "`\n"
 }
 
+// Draft
+func (r Roller) getRepeatReplyComp() string {
+	var str strings.Builder
+	// Formats the checks into a human reading format for each roll check
+	r.appendChecksResults(&str)
+	// Append the bonus if any (adding + symbol on positive bonus)
+	r.appendBonusTotal(&str)
+
+	fmt.Fprintf(&str, " = %d", r.total)
+
+	return str.String() + "\n"
+}
+
 // Generates a String with a verbose result of the roll
 // * Retrieves every result of every check done
 // * Retrieves every bonus

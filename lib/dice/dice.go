@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"strconv"
 )
+
+const MAX_REPETITIONS = 20
 
 func initRoller(cmd string) Roller {
 	return Roller{cmd, []check{}, []int{}, 0, ""}
@@ -53,15 +56,38 @@ func Distribute(command string) (roller Roller) {
 	return
 }
 
-func Repeat(command string) (Roller, error) {
+// Draft
+func Repeat(command string) (string, error) {
 	var regexDices = regexp.MustCompile(`(?P<rpt>^\d+) (?P<cmd>.*)?`)
 	var matches = regexDices.FindStringSubmatch(command)
-
 	if len(matches) == 0 {
-		return Roller{}, fmt.Errorf("Input was not valid")
+		return errNotValidInput("dice.Repeat")
 	}
 
-	fmt.Println(getMapRegexGroups(regexDices.SubexpNames(), matches))
+	var roll = getMapRegexGroups(regexDices.SubexpNames(), matches)
+	var rpt = getRepetitions(roll["rpt"])
+	var str strings.Builder
 
-	return Roller{}, nil
+	for i := 0; i < rpt; i++ {
+		roller := Resolve(roll["cmd"], "1d20")
+		str.WriteString(roller.getRepeatReplyComp())
+	}
+	return str.String(), nil
+}
+
+func getRepetitions(rpt string) int {
+	var reps, _ = strconv.Atoi(rpt)
+	// Avoid flooding with too many rolls
+	if reps > MAX_REPETITIONS {
+		return MAX_REPETITIONS
+	}
+	return reps
+}
+
+/*
+ * Error typification
+ */
+
+func errNotValidInput(f string) (string, error) {
+	return "", fmt.Errorf("Input was not valid for function: %s", f)
 }

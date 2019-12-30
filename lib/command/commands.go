@@ -26,11 +26,7 @@ func resolveDistRoll(input string) func() (string, error) {
 
 func resolveReptRoll(input string) func() (string, error) {
 	return func() (string, error) {
-		var roller, err = dice.Repeat(input)
-		if err != nil {
-			return "", err
-		}
-		return roller.GetReply(), nil
+		return dice.Repeat(input)
 	}
 }
 
