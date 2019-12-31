@@ -47,7 +47,7 @@ func (c baseCommand) Run(api Request) error {
  */
 func validCommands() string {
 	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda", "repite"}
-	return fmt.Sprintf("/(%s)(.*)", strings.Join(VALID_COMMANDS[:], "|"))
+	return fmt.Sprintf(`/(%s)(\s.*)?$`, strings.Join(VALID_COMMANDS[:], "|"))
 }
 
 func getCommand(inputCmd string, arg string) (cmd baseCommand) {
