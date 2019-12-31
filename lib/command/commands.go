@@ -17,19 +17,6 @@ func resolveBasicRoll(input string, defaultRoll string) func() (string, error) {
 	}
 }
 
-func resolveDistRoll(input string) func() (string, error) {
-	return func() (string, error) {
-		var roller = dice.Distribute(input)
-		return roller.GetReply(), nil // TODO - Handle Resolve errors
-	}
-}
-
-func resolveReptRoll(input string) func() (string, error) {
-	return func() (string, error) {
-		return dice.Repeat(input)
-	}
-}
-
 func resolveHelp() func() (string, error) {
 	return func() (string, error) {
 		return dice.HELP, nil
@@ -91,7 +78,9 @@ func NewT(_ string) (c baseCommand) {
 }
 
 func NewAgrupa(arg string) (c baseCommand) {
-	c.resolve = resolveDistRoll(arg)
+	c.resolve = func() (string, error) {
+		return dice.Distribute(arg)
+	}
 	c.send = sendMarkdownReply()
 	return
 }
@@ -103,7 +92,9 @@ func NewAyuda(_ string) (c baseCommand) {
 }
 
 func NewRepite(arg string) (c baseCommand) {
-	c.resolve = resolveReptRoll(arg)
+	c.resolve = func () (string, error) {
+		return dice.Repeat(arg)
+	}
 	c.send = sendBasicReply()
 	return
 }
