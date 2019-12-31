@@ -37,10 +37,9 @@ func (r *Roller) appendBonusTotal(builder *strings.Builder) {
 }
 
 // Generates a string with verbose line and totals for the roll
-func (r *Roller) getDistributeReplyComponent(key string) string {
+func (r *Roller) getDistReplyComp(tag string) string {
 	var str strings.Builder
-
-	fmt.Fprintf(&str, "_%s_ (%d)` = ", key, r.total)
+	fmt.Fprintf(&str, "_%s_ (%d)` = ", tag, r.total)
 
 	// Formats the checks into a human reading format for each roll check
 	r.appendChecksResults(&str)

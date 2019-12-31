@@ -29,34 +29,48 @@ func Resolve(command string, defaultRoll string) Roller {
 
 // Distribute roll returns a rich reply (currently markdown)
 // It details separately rolls/bonus and supports multiple tags
-func Distribute(command string) (roller Roller) {
-	var regexDices = regexp.MustCompile(`(?P<cmd>[^:]+)(?::(?P<key>[^\s\+-]+))?`)
+// Used by commands: Agrupa
+func Distribute(command string) (string, error) {
+	var regexDices = regexp.MustCompile(`(?P<cmd>[^:]+)(?::(?P<tag>[^\s\+-]+))?`)
 	var matches = regexDices.FindAllStringSubmatch(command, -1)
-
+	var reply string
+	if len(matches) == 0 {
+		return errNotValidInput("dice.Distribute")
+	}
+	
 	if len(matches) == 1 {
-		roller = Resolve(command, "1d20")
-		roller.setGroupedReply()
+		reply = getNoTagsDist(command)
 
 	} else {
 		var str strings.Builder
 		for _, match := range matches {
 			var roll = getMapRegexGroups(regexDices.SubexpNames(), match)
-			var tag = roll["key"]
-			if tag == "" {
-				tag = "n/a"
-			}
-			roller = Resolve(roll["cmd"], "")
-
-			fmt.Fprintf(&str, "%s", roller.getDistributeReplyComponent(tag))
+			str.WriteString(getTaggedDistLine(roll))
 		}
-
-		roller.reply = str.String()
+		reply = str.String()
 	}
 
-	return
+	return reply, nil
 }
 
-// Draft
+func getNoTagsDist(command string) string {
+	var r = Resolve(command, "1d20")
+	r.setGroupedReply()
+	return r.GetReply()
+}
+
+func getTaggedDistLine(roll map[string]string) string {
+	var tag = "n/a"
+	if roll["tag"] != "" {
+		tag = roll["tag"]
+	}
+
+	roller := Resolve(roll["cmd"], "")
+	return roller.getDistReplyComp(tag)
+}
+
+// Returns a grouped similar rolls on a rich reply
+// Used by commands: Repite
 func Repeat(command string) (string, error) {
 	var regexDices = regexp.MustCompile(`(?P<rpt>^\d+) (?P<cmd>.*)?`)
 	var matches = regexDices.FindStringSubmatch(command)
