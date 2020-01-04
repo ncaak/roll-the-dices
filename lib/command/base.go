@@ -50,7 +50,7 @@ func validCommands() string {
 	return fmt.Sprintf(`/(%s)(\s.*)?$`, strings.Join(VALID_COMMANDS[:], "|"))
 }
 
-func getCommand(inputCmd string, arg string) (cmd baseCommand) {
+func getBaseCommand(inputCmd string, arg string) (cmd baseCommand) {
 	var argument = strings.TrimSpace(arg)
 	switch inputCmd {
 	case "tira":
@@ -77,8 +77,7 @@ func GetValidatedCommandOrError(input structs.Result) (baseCommand, error) {
 	if len(match) == 0 {
 		return baseCommand{}, fmt.Errorf("Received command is not valid")
 	}
-
-	var command = getCommand(match[1], match[2])
+	var command = getBaseCommand(match[1], match[2])
 	command.source = input.Message
 
 	return command, nil

@@ -5,6 +5,18 @@ import (
 	"github.com/ncaak/roll-the-dices/lib/request/structs"
 )
 
+/*
+ * Mocks
+ */
+type mockRequest struct {}
+func (r mockRequest) BasicReply (a int, b int, c string) {}
+func (r mockRequest) KeyboardReply (a int, b int) {}
+func (r mockRequest) MarkdownReply (a int, b int, c string) {}
+
+type mockSource struct {}
+func (s mockSource) GetChatId () int {return 0}
+func (s mockSource) GetReplyId () int {return 0}
+
 func mockResult(command string) (mock structs.Result) {
 	mock.Message.Text = "/" + command
 	return
@@ -58,4 +70,20 @@ func TestUnknownCommandOK(t *testing.T) {
 /*
  * Command execution tests
  */
+func TestCommandAgrupaOK(t *testing.T) {
+	command := getBaseCommand("agrupa", "1d8+1d6")
+	command.source = mockSource{}
+	err := command.Run(mockRequest{})
+	if err != nil {
+		t.Errorf("ERROR :: %s", err.Error())
+	}
+}
 
+func TestCommandAgrupaKO(t *testing.T) {
+	command := getBaseCommand("agrupa", "")
+	command.source = mockSource{}
+	err := command.Run(mockRequest{})
+	if err == nil {
+		t.Error("ERROR :: Failed to catch non valid input")
+	}
+}
