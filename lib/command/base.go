@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"github.com/ncaak/roll-the-dices/lib/request/structs"
 	"regexp"
 	"strings"
 )
@@ -19,6 +18,7 @@ type Request interface {
 }
 type Source interface {
 	GetChatId() int
+	GetCommand() string
 	GetReplyId() int
 }
 
@@ -72,13 +72,13 @@ func getBaseCommand(inputCmd string, arg string) (cmd baseCommand) {
 }
 
 // Library main method to validate commands and initialize structure with required functionality
-func GetValidatedCommandOrError(input structs.Result) (baseCommand, error) {
+func GetValidatedCommandOrError(input Source) (baseCommand, error) {
 	var match = regexp.MustCompile(validCommands()).FindStringSubmatch(input.GetCommand())
 	if len(match) == 0 {
 		return baseCommand{}, fmt.Errorf("Received command is not valid")
 	}
 	var command = getBaseCommand(match[1], match[2])
-	command.source = input.Message
+	command.source = input
 
 	return command, nil
 }

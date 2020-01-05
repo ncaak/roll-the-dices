@@ -15,15 +15,16 @@ func main() {
 
 	var settings = config.GetSettings()
 	var db = storage.Init(settings.DataBase)
-	var api = request.Init(settings.Api)
-	var results = api.GetUpdates(db.GetOffset())
-
 	defer db.Close()
+	
+	var api = request.Init(settings.Api)
+	var updates = api.GetUpdates(db.GetOffset())
 
-	for _, res := range results {
 
-		if res.IsCommand() == true {
-			cmd, err := command.GetValidatedCommandOrError(res)
+	for _, update := range updates {
+
+		if update.IsCommand() {
+			cmd, err := command.GetValidatedCommandOrError(update.Message)
 			if err != nil {
 				log.Println("[WRN] " + err.Error())
 
@@ -34,15 +35,15 @@ func main() {
 				}
 			}
 
-		} else if res.IsCallback() {
+		} else if update.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
-			var roll = dice.Resolve(res.Callback.Data, "1d20")
-			api.EditKeyboardReply(res.Callback, roll.GetReply())
+			var roll = dice.Resolve(update.Callback.Data, "1d20")
+			api.EditKeyboardReply(update.Callback, roll.GetReply())
 		}
 	}
 
-	if len(results) > 0 {
-		var newOffset = fmt.Sprintf("%d", results[len(results)-1].UpdateId+1)
+	if len(updates) > 0 {
+		var newOffset = fmt.Sprintf("%d", updates[len(updates)-1].UpdateId+1)
 		db.SetOffset(newOffset)
 	}
 

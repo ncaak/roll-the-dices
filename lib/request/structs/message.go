@@ -52,6 +52,10 @@ func (msg Message) GetChatId() int {
 	return msg.Chat.Id
 }
 
+func (msg Message) GetCommand() string {
+	return msg.Text
+}
+
 // Returning source Message identifier to send the reply to the original sender
 func (msg Message) GetReplyId() int {
 	return msg.MessageId

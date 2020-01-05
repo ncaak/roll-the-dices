@@ -2,7 +2,6 @@ package command
 
 import (
 	"testing"
-	"github.com/ncaak/roll-the-dices/lib/request/structs"
 )
 
 /*
@@ -13,12 +12,15 @@ func (r mockRequest) BasicReply (a int, b int, c string) {}
 func (r mockRequest) KeyboardReply (a int, b int) {}
 func (r mockRequest) MarkdownReply (a int, b int, c string) {}
 
-type mockSource struct {}
+type mockSource struct {
+	Text string
+}
 func (s mockSource) GetChatId () int {return 0}
+func (s mockSource) GetCommand () string {return s.Text}
 func (s mockSource) GetReplyId () int {return 0}
 
-func mockResult(command string) (mock structs.Result) {
-	mock.Message.Text = "/" + command
+func mockInput(command string) (mock mockSource) {
+	mock.Text = "/" + command
 	return
 }
 
@@ -26,7 +28,7 @@ func mockResult(command string) (mock structs.Result) {
  * Command validation tests (only if the command is recognized as valid)
  */
 func validateTest(t *testing.T, command string) {
-	_, err := GetValidatedCommandOrError(mockResult(command))
+	_, err := GetValidatedCommandOrError(mockInput(command))
 	if err != nil {
 		t.Errorf("ERROR :: %s", err.Error())
 	}
@@ -61,7 +63,7 @@ func TestValidateRepiteCommandOK(t *testing.T) {
 }
 
 func TestUnknownCommandOK(t *testing.T) {
-	_, err := GetValidatedCommandOrError(mockResult("test"))
+	_, err := GetValidatedCommandOrError(mockInput("test"))
 	if err == nil {
 		t.Error("ERROR :: No error was raised")
 	}

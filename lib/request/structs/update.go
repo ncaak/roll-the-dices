@@ -28,11 +28,6 @@ type Update struct {
 
 // --- Exported methods for the structure ---
 
-// Retrieves the message content filtered as it is supposed to be a command
-func (result *Result) GetCommand() string {
-	return result.Message.Text
-}
-
 // Returns if a message is a command or only another message type which will be ignored
 func (result *Result) IsCommand() (command bool) {
 	if ent := result.Message.Entities; len(ent) > 0 && ent[0].Type == COMMAND_TYPE {
