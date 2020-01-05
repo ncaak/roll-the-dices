@@ -24,45 +24,32 @@ func mockInput(command string) (mock mockSource) {
 	return
 }
 
+func mockCommand(command string, argument string) error {
+	cmd := getBaseCommand(command, argument)
+	cmd.source = mockSource{}
+	return cmd.Run(mockRequest{})
+}
+
+func mockValidation(t *testing.T, command string) {
+	_, err := GetValidatedCommandOrError(mockInput(command))
+	if err != nil {
+		t.Errorf("ERROR :: command %s : %s", command, err.Error())
+	}
+}
 /*
  * Command validation tests (only if the command is recognized as valid)
  */
-func validateTest(t *testing.T, command string) {
-	_, err := GetValidatedCommandOrError(mockInput(command))
-	if err != nil {
-		t.Errorf("ERROR :: %s", err.Error())
-	}
+func TestValidCommandOK(t *testing.T) {
+	mockValidation(t, "tira")
+	mockValidation(t, "t")
+	mockValidation(t, "v")
+	mockValidation(t, "dv")
+	mockValidation(t, "agrupa")
+	mockValidation(t, "ayuda")
+	mockValidation(t, "repite")
 }
 
-func TestValidateTiraCommandOK(t *testing.T) {
-	validateTest(t, "tira")
-}
-
-func TestValidateTCommandOK(t *testing.T) {
-	validateTest(t, "t")
-}
-
-func TestValidateVCommandOK(t *testing.T) {
-	validateTest(t, "v")
-}
-
-func TestValidateDvCommandOK(t *testing.T) {
-	validateTest(t, "dv")
-}
-
-func TestValidateAgrupaCommandOK(t *testing.T) {
-	validateTest(t, "agrupa")
-}
-
-func TestValidateAyudaCommandOK(t *testing.T) {
-	validateTest(t, "ayuda")
-}
-
-func TestValidateRepiteCommandOK(t *testing.T) {
-	validateTest(t, "repite")
-}
-
-func TestUnknownCommandOK(t *testing.T) {
+func TestValidCommandKO(t *testing.T) {
 	_, err := GetValidatedCommandOrError(mockInput("test"))
 	if err == nil {
 		t.Error("ERROR :: No error was raised")
@@ -73,18 +60,28 @@ func TestUnknownCommandOK(t *testing.T) {
  * Command execution tests
  */
 func TestCommandAgrupaOK(t *testing.T) {
-	command := getBaseCommand("agrupa", "1d8+1d6")
-	command.source = mockSource{}
-	err := command.Run(mockRequest{})
+	err := mockCommand("agrupa", "1d8+1d6")
 	if err != nil {
 		t.Errorf("ERROR :: %s", err.Error())
 	}
 }
 
 func TestCommandAgrupaKO(t *testing.T) {
-	command := getBaseCommand("agrupa", "")
-	command.source = mockSource{}
-	err := command.Run(mockRequest{})
+	err := mockCommand("agrupa", "")
+	if err == nil {
+		t.Error("ERROR :: Failed to catch non valid input")
+	}
+}
+
+func TestCommandRepiteOK(t *testing.T) {
+	err := mockCommand("repite", "2 1d20")
+	if err != nil {
+		t.Errorf("ERROR :: %s", err.Error())
+	}
+}
+
+func TestCommandRepiteKO(t *testing.T) {
+	err := mockCommand("repite", "1d20")
 	if err == nil {
 		t.Error("ERROR :: Failed to catch non valid input")
 	}
