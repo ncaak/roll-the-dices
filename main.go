@@ -16,10 +16,9 @@ func main() {
 	var settings = config.GetSettings()
 	var db = storage.Init(settings.DataBase)
 	defer db.Close()
-	
+
 	var api = request.Init(settings.Api)
 	var updates = api.GetUpdates(db.GetOffset())
-
 
 	for _, update := range updates {
 
@@ -37,8 +36,8 @@ func main() {
 
 		} else if update.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
-			var roll = dice.Resolve(update.Callback.Data, "1d20")
-			api.EditKeyboardReply(update.Callback, roll.GetReply())
+			var roll, _ = dice.Roll(update.Callback.Data, "1d20")
+			api.EditKeyboardReply(update.Callback, roll)
 		}
 	}
 

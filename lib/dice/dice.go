@@ -3,8 +3,8 @@ package dice
 import (
 	"fmt"
 	"regexp"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 const MAX_REPETITIONS = 20
@@ -27,6 +27,11 @@ func Resolve(command string, defaultRoll string) Roller {
 	return r
 }
 
+func Roll(command string, defaultRoll string) (string, error) {
+	var r = Resolve(command, defaultRoll)
+	return r.GetReply(), nil
+}
+
 // Distribute roll returns a rich reply (currently markdown)
 // It details separately rolls/bonus and supports multiple tags
 // Used by commands: Agrupa
@@ -37,7 +42,7 @@ func Distribute(command string) (string, error) {
 	if len(matches) == 0 {
 		return errNotValidInput("dice.Distribute")
 	}
-	
+
 	if len(matches) == 1 {
 		reply = getNoTagsDist(command)
 

@@ -9,14 +9,6 @@ import (
  * It adds polymorphism for the different commands
  */
 
-// Roll resolving functions
-func resolveBasicRoll(input string, defaultRoll string) func() (string, error) {
-	return func() (string, error) {
-		var roller = dice.Resolve(input, defaultRoll)
-		return roller.GetReply(), nil // TODO - Handle Resolve errors
-	}
-}
-
 // Replies to API functions
 func sendBasicReply() func(Request, Source, string) {
 	return func(api Request, source Source, roll string) {
@@ -42,19 +34,19 @@ func sendMarkdownReply() func(Request, Source, string) {
  */
 
 func NewTira(arg string) (c baseCommand) {
-	c.resolve = resolveBasicRoll(arg, "1d20")
+	c.resolve = func() (string, error) { return dice.Roll(arg, "1d20") }
 	c.send = sendBasicReply()
 	return
 }
 
 func NewV(arg string) (c baseCommand) {
-	c.resolve = resolveBasicRoll(arg, "h2d20")
+	c.resolve = func() (string, error) { return dice.Roll(arg, "h2d20") }
 	c.send = sendBasicReply()
 	return
 }
 
 func NewDv(arg string) (c baseCommand) {
-	c.resolve = resolveBasicRoll(arg, "l2d20")
+	c.resolve = func() (string, error) { return dice.Roll(arg, "l2d20") }
 	c.send = sendBasicReply()
 	return
 }
