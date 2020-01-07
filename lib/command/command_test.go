@@ -7,17 +7,19 @@ import (
 /*
  * Mocks
  */
-type mockRequest struct {}
-func (r mockRequest) BasicReply (a int, b int, c string) {}
-func (r mockRequest) KeyboardReply (a int, b int) {}
-func (r mockRequest) MarkdownReply (a int, b int, c string) {}
+type mockRequest struct{}
+
+func (r mockRequest) BasicReply(a int, b int, c string)    {}
+func (r mockRequest) KeyboardReply(a int, b int)           {}
+func (r mockRequest) MarkdownReply(a int, b int, c string) {}
 
 type mockSource struct {
 	Text string
 }
-func (s mockSource) GetChatId () int {return 0}
-func (s mockSource) GetCommand () string {return s.Text}
-func (s mockSource) GetReplyId () int {return 0}
+
+func (s mockSource) GetChatId() int     { return 0 }
+func (s mockSource) GetCommand() string { return s.Text }
+func (s mockSource) GetReplyId() int    { return 0 }
 
 func mockInput(command string) (mock mockSource) {
 	mock.Text = "/" + command
@@ -36,6 +38,7 @@ func mockValidation(t *testing.T, command string) {
 		t.Errorf("ERROR :: command %s : %s", command, err.Error())
 	}
 }
+
 /*
  * Command validation tests (only if the command is recognized as valid)
  */

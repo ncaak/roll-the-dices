@@ -17,18 +17,6 @@ func resolveBasicRoll(input string, defaultRoll string) func() (string, error) {
 	}
 }
 
-func resolveHelp() func() (string, error) {
-	return func() (string, error) {
-		return dice.HELP, nil
-	}
-}
-
-func resolveNoRoll() func() (string, error) {
-	return func() (string, error) {
-		return "", nil
-	}
-}
-
 // Replies to API functions
 func sendBasicReply() func(Request, Source, string) {
 	return func(api Request, source Source, roll string) {
@@ -72,29 +60,25 @@ func NewDv(arg string) (c baseCommand) {
 }
 
 func NewT(_ string) (c baseCommand) {
-	c.resolve = resolveNoRoll()
+	c.resolve = func() (string, error) { return "", nil }
 	c.send = sendKeyboard()
 	return
 }
 
 func NewAgrupa(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) {
-		return dice.Distribute(arg)
-	}
+	c.resolve = func() (string, error) { return dice.Distribute(arg) }
 	c.send = sendMarkdownReply()
 	return
 }
 
 func NewAyuda(_ string) (c baseCommand) {
-	c.resolve = resolveHelp()
+	c.resolve = func() (string, error) { return dice.HELP, nil }
 	c.send = sendMarkdownReply()
 	return
 }
 
 func NewRepite(arg string) (c baseCommand) {
-	c.resolve = func () (string, error) {
-		return dice.Repeat(arg)
-	}
+	c.resolve = func() (string, error) { return dice.Repeat(arg) }
 	c.send = sendBasicReply()
 	return
 }
