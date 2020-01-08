@@ -83,7 +83,7 @@ func TestRollBasic(t *testing.T) {
 	var test = "1d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -95,7 +95,7 @@ func TestRollMultiple(t *testing.T) {
 	var test = "2d20+1d6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+1d6[d3]= d4' (d4=d1+d2+d3)")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}, {1, 6}}, []int{}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -107,7 +107,7 @@ func TestRollDefault(t *testing.T) {
 	var test = ""
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]= d1' d1 = [1-20]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -119,7 +119,7 @@ func TestRollWhitespaces(t *testing.T) {
 	var test = "2d20 + 1d10 +1d6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+1d10[d3]+1d6[d4]= d5' (d5=d1+d2+d3+d4)")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}, {1, 10}, {1, 6}}, []int{}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -131,7 +131,7 @@ func TestBonusBasic(t *testing.T) {
 	var test = "1d20+5"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]+5= d2' d2 = [6-25]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{5}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -143,7 +143,7 @@ func TestBonusNegative(t *testing.T) {
 	var test = "2d10-3"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d10[d1]-3= d2' d2 = [-1-17]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 10}}, []int{-3}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -155,7 +155,7 @@ func TestBonusMultiple(t *testing.T) {
 	var test = "1d20 + 7 - 3"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]+7-3= d2' d2 = [5-24]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{7, -3}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -167,7 +167,7 @@ func TestBonusDefault(t *testing.T) {
 	var test = "+4"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '1d20[d1]+4= d2' d2 = [5-24]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{4}, sliceSum())
 	t.Logf("Result: %s", roller.GetReply())
@@ -179,7 +179,7 @@ func TestTagBasic(t *testing.T) {
 	var test = "1d20 Initiative"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
@@ -195,7 +195,7 @@ func TestTagMultiple(t *testing.T) {
 	var test = "1d20 +7 Initiative"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]+7= d2' d2 = [8-27]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{7}, sliceSum())
@@ -211,7 +211,7 @@ func TestTagDefalut(t *testing.T) {
 	var test = "Initiative"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: 'Initiative: 1d20[d1]= d1' d1 = [1-20]")
-	var roller = Resolve(test, "1d20")
+	var roller = resolve(test, "1d20")
 	var result = roller.GetReply()
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{1, 20}}, []int{}, sliceSum())
@@ -227,7 +227,7 @@ func TestAdvantageBasic(t *testing.T) {
 	var test = "h2d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
-	var roller = Resolve(test, "h2d20")
+	var roller = resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceHigher(1))
 	t.Logf("Result: %s", roller.GetReply())
@@ -239,7 +239,7 @@ func TestAdvantageBonus(t *testing.T) {
 	var test = "h2d20 + 7"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+7= d3' d3 = max(d1, d2)+7")
-	var roller = Resolve(test, "h2d20")
+	var roller = resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{7}, sliceHigher(1))
 	t.Logf("Result: %s", roller.GetReply())
@@ -251,7 +251,7 @@ func TestAdvantageDefault(t *testing.T) {
 	var test = ""
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = max(d1, d2)")
-	var roller = Resolve(test, "h2d20")
+	var roller = resolve(test, "h2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceHigher(1))
 	t.Logf("Result: %s", roller.GetReply())
@@ -263,7 +263,7 @@ func TestAdvantageComplex(t *testing.T) {
 	var test = "3h4d6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '4d6[d1 d2 d3 d4]= d5' d5 = 3bestOf(d1, d2, d3, d4)")
-	var roller = Resolve(test, "3h4d6")
+	var roller = resolve(test, "3h4d6")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{4, 6}}, []int{}, sliceHigher(3))
 	t.Logf("Result: %s", roller.GetReply())
@@ -275,7 +275,7 @@ func TestDisadvantageBasic(t *testing.T) {
 	var test = "l2d20"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = min(d1, d2)")
-	var roller = Resolve(test, "l2d20")
+	var roller = resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceLower())
 	t.Logf("Result: %s", roller.GetReply())
@@ -287,7 +287,7 @@ func TestDisadvantageBonus(t *testing.T) {
 	var test = "l2d20 +6"
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]+6= d3' d3 = min(d1, d2)+6")
-	var roller = Resolve(test, "l2d20")
+	var roller = resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{6}, sliceLower())
 	t.Logf("Result: %s", roller.GetReply())
@@ -299,7 +299,7 @@ func TestDisadvantageDefault(t *testing.T) {
 	var test = ""
 	t.Logf("Test roll: %s", test)
 	t.Log("Expected roll: '2d20[d1 d2]= d3' d3 = min(d1, d2)")
-	var roller = Resolve(test, "l2d20")
+	var roller = resolve(test, "l2d20")
 	// Sends roll to checker
 	checkRoll(t, roller, diceMatrix{{2, 20}}, []int{}, sliceLower())
 	t.Logf("Result: %s", roller.GetReply())
