@@ -23,7 +23,7 @@ type Reply struct {
  */
 
 // Main structure initializer with basic data
-func initReply(chatId int, replyId int) (r Reply) {
+func getBaseReply(chatId int, replyId int) (r Reply) {
 	r.ChatId = chatId
 	r.ReplyId = replyId
 	return
@@ -31,14 +31,14 @@ func initReply(chatId int, replyId int) (r Reply) {
 
 // Returns a reply with a simple unformatted text
 func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
-	var r = initReply(chatId, replyId)
+	var r = getBaseReply(chatId, replyId)
 	r.Text = text
 	return r.encode()
 }
 
 // Returns a reply with an inline keyboard
 func InitKeyboard(chatId int, replyId int) *bytes.Buffer {
-	var r = initReply(chatId, replyId)
+	var r = getBaseReply(chatId, replyId)
 	r.Text = KBD_MSG
 	r.Markup = NewDiceKeyboard()
 	return r.encode()
@@ -46,7 +46,7 @@ func InitKeyboard(chatId int, replyId int) *bytes.Buffer {
 
 // Returns a reply with markdown formatted text
 func InitMarkdown(chatId int, replyId int, text string) *bytes.Buffer {
-	var r = initReply(chatId, replyId)
+	var r = getBaseReply(chatId, replyId)
 	r.Text = text
 	r.Parse = MARKDOWN
 	return r.encode()
