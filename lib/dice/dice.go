@@ -15,7 +15,7 @@ func initRoller(cmd string) Roller {
 
 // Main algorithm that goes through all the steps to retrieve args info, dice info, bonus info and tagging info
 // Accepts a default Roll as argument to allow indirect rolls with only bonus and no dice
-func Resolve(command string, defaultRoll string) Roller {
+func resolve(command string, defaultRoll string) Roller {
 	var r = initRoller(command)
 
 	r.extractDice(defaultRoll)
@@ -27,8 +27,9 @@ func Resolve(command string, defaultRoll string) Roller {
 	return r
 }
 
+// Regular roll returns a plain text reply
 func Roll(command string, defaultRoll string) (string, error) {
-	var r = Resolve(command, defaultRoll)
+	var r = resolve(command, defaultRoll)
 	return r.GetReply(), nil
 }
 
@@ -59,7 +60,7 @@ func Distribute(command string) (string, error) {
 }
 
 func getNoTagsDist(command string) string {
-	var r = Resolve(command, "1d20")
+	var r = resolve(command, "1d20")
 	r.setGroupedReply()
 	return r.GetReply()
 }
@@ -70,7 +71,7 @@ func getTaggedDistLine(roll map[string]string) string {
 		tag = roll["tag"]
 	}
 
-	roller := Resolve(roll["cmd"], "")
+	roller := resolve(roll["cmd"], "")
 	return roller.getDistReplyComp(tag)
 }
 
@@ -88,7 +89,7 @@ func Repeat(command string) (string, error) {
 	var str strings.Builder
 
 	for i := 0; i < rpt; i++ {
-		roller := Resolve(roll["cmd"], "1d20")
+		roller := resolve(roll["cmd"], "1d20")
 		str.WriteString(roller.getRepeatReplyComp())
 	}
 	return str.String(), nil

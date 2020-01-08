@@ -49,7 +49,7 @@ func (r *Roller) getDistReplyComp(tag string) string {
 	return str.String() + "`\n"
 }
 
-// Draft
+// Generates a text line with the roll resolution
 func (r Roller) getRepeatReplyComp() string {
 	var str strings.Builder
 	// Formats the checks into a human reading format for each roll check
