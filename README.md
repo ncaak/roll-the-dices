@@ -88,17 +88,21 @@ _Examples:_
 | dv -1 | 2d20[12,19]-1 = 11 |
 | dv Initiative | Initiative: 1d20[2,7]= 2 |
 
-**help**
-> Displays markdown text with help about the commands and how to use them. Currently only spanish available.
-
 **t**
 > Displays a button keyboard to allow user to enter basic commands without actually writing.
 
+**repite** _repetitions_ _dice_ [_bonus_[_bonus_[...]]]
+> Repeats the following dice and bonus instruction a set number of times. Maximum repetitions 20.
+
+**ayuda** [_command_]
+> Displays markdown text with help about the commands entered and how to use it.
+
 ## Versioning
-Current stable version: v0.5.0-beta
+Current stable version: v0.7.0-beta
 #### Changelog
 | version |  notes |
 | --- | --- |
+| v0.7 | - Included _repite_ command, Reworked _ayuda_ command and performance improvement |
 | v0.6 | - Docker support |
 | v0.5 | - Included _agrupa_ command and performance improvement |
 | v0.4 | - Included _help_ and _t_ commands |
