@@ -89,3 +89,17 @@ func TestCommandRepiteKO(t *testing.T) {
 		t.Error("ERROR :: Failed to catch non valid input")
 	}
 }
+
+func TestCommandAyudaOK(t *testing.T) {
+	err := mockCommand("ayuda", "tira")
+	if err != nil {
+		t.Errorf("ERROR :: %s", err.Error())
+	}
+}
+
+func TestCommandAyudaKO(t *testing.T) {
+	help := getHelp("test")
+	if help != DEFAULT_HELP {
+		t.Error("ERROR :: Test command validated")
+	}
+}

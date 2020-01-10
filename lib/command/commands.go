@@ -63,8 +63,8 @@ func NewAgrupa(arg string) (c baseCommand) {
 	return
 }
 
-func NewAyuda(_ string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.HELP, nil }
+func NewAyuda(arg string) (c baseCommand) {
+	c.resolve = func() (string, error) { return getHelp(arg), nil }
 	c.send = sendMarkdownReply()
 	return
 }
