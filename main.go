@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/ncaak/roll-the-dices/lib/command"
 	"github.com/ncaak/roll-the-dices/lib/config"
 	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
-	"regexp"
-	"strings"
 )
 
 func main() {
@@ -16,56 +15,34 @@ func main() {
 
 	var settings = config.GetSettings()
 	var db = storage.Init(settings.DataBase)
-	var api = request.Init(settings.Api)
-	var results = api.GetUpdates(db.GetOffset())
-
 	defer db.Close()
 
-	for _, res := range results {
+	var api = request.Init(settings.Api)
+	var updates = api.GetUpdates(db.GetOffset())
 
-		if res.IsCommand() == true {
-			var command = regexp.MustCompile(`/(agrupa|tira|t|v|dv|ayuda)(.*)`).FindStringSubmatch(res.GetCommand())
+	for _, update := range updates {
 
-			if len(command) > 0 {
-				var argument = strings.TrimSpace(command[2])
-				var rollCommands = map[string]string{
-					"tira": "1d20",
-					"v":    "h2d20",
-					"dv":   "l2d20",
-				}
+		if update.IsCommand() {
+			cmd, err := command.GetValidatedCommandOrError(update.Message)
+			if err != nil {
+				log.Println("[WRN] " + err.Error())
 
-				// Detects the command entered being a roll command
-				if defRoll := rollCommands[command[1]]; defRoll != "" {
-					var roll = dice.Resolve(argument, defRoll)
-					api.Reply(res.Message, roll.GetReply())
-					fmt.Println("reply provided")
-
-				} else {
-					switch command[1] {
-					case "agrupa":
-						var roll = dice.Distribute(argument)
-						api.ReplyMarkdown(res.Message, roll.GetReply())
-						fmt.Println("rich reply provided")
-
-					case "t":
-						api.ReplyInlineKeyboard(res.Message)
-						fmt.Println("inline keyboard provided")
-
-					case "ayuda":
-						api.ReplyMarkdown(res.Message, dice.HELP)
-						fmt.Println("help provided")
-					}
+			} else {
+				errCmd := cmd.Run(api)
+				if errCmd != nil {
+					log.Println("[ERR] " + errCmd.Error())
 				}
 			}
-		} else if res.IsCallback() {
+
+		} else if update.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
-			var roll = dice.Resolve(res.Callback.Data, "1d20")
-			api.EditKeyboardReply(res.Callback, roll.GetReply())
+			var roll, _ = dice.Roll(update.Callback.Data, "1d20")
+			api.EditKeyboardReply(update.Callback, roll)
 		}
 	}
 
-	if len(results) > 0 {
-		var newOffset = fmt.Sprintf("%d", results[len(results)-1].UpdateId+1)
+	if len(updates) > 0 {
+		var newOffset = fmt.Sprintf("%d", updates[len(updates)-1].UpdateId+1)
 		db.SetOffset(newOffset)
 	}
 
