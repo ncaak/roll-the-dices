@@ -10,14 +10,24 @@ import (
 	"log"
 )
 
+func panicOnError(err error) {
+	if err != nil {
+		log.Printf("[ERR] %s", err.Error())
+		panic(err)
+	}
+}
+
 func main() {
 	log.Println("[INF] Beginning routine")
 
-	var settings = config.GetSettings()
-	var db = storage.Init(settings.DataBase)
+	var settings, errConf = config.GetSettings()
+	panicOnError(errConf)
+
+	var db, errDB = storage.Init(settings)
+	panicOnError(errDB)
 	defer db.Close()
 
-	var api = request.Init(settings.Api)
+	var api = request.Init(settings)
 	var updates = api.GetUpdates(db.GetOffset())
 
 	for _, update := range updates {

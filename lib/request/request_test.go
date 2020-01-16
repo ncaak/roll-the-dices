@@ -5,13 +5,36 @@ import (
 	"testing"
 )
 
-// Tests basic request to get last updates
-func TestRequestGetUpdates(t *testing.T) {
-	var test = "ENV_DEV"
-	var settings = config.GetSettings(test)
-	t.Logf("Test request configuration for environment: %s", test)
-	var req = Init(settings.Api)
-	// Pings the opened database to check if everything was fine
-	var result = req.GetUpdates(1)
-	t.Logf("Result: Updates returned: %+v", result)
+/*
+ * Mocks
+ */
+type mockSettings struct{}
+
+func (s mockSettings) GetApiUrl() string { return "https://localhost" }
+
+/*
+ * Tests
+ */
+func initApi() core {
+	cfg, _ := config.GetSettings()
+	return Init(cfg)
+}
+
+func panicRecover(t *testing.T) func() {
+	return func() {
+		if r := recover(); r == nil {
+			t.Error("ERROR :: Wrong query to mock core")
+		}
+	}
+}
+
+func TestGetUpdatesOK(t *testing.T) {
+	var api = initApi()
+	api.GetUpdates(0)
+}
+
+func TestGetUpdatesKO(t *testing.T) {
+	defer panicRecover(t)()
+	var api = Init(mockSettings{})
+	api.GetUpdates(0)
 }

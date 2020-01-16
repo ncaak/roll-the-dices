@@ -4,22 +4,26 @@ import (
 	"testing"
 )
 
-// Tests retrieving API configuration from DEV environment variables
-func TestConfigAPI(t *testing.T) {
-	var test = "ENV_DEV"
-	t.Logf("Test configuration for environment: %s", test)
-	t.Log("Expected result: 'API: {BaseUrl:<baseUrl> Token:<token>}'")
+/*
+ * Mocks
+ */
+type mockHandler struct{}
 
-	var result = GetSettings(test)
-	t.Logf("Result: API: %+v", result.Api)
+func (h mockHandler) get(key string) string { return "" }
+
+/*
+ * Tests
+ */
+func TestGetGlobalSettingsOK(t *testing.T) {
+	_, err := GetSettings()
+	if err != nil {
+		t.Errorf("ERROR :: %s", err.Error())
+	}
 }
 
-// Tests retrieving Database configuration from DEV environment variables
-func TestConfigDB(t *testing.T) {
-	var test = "ENV_DEV"
-	t.Logf("Test configuration for environment: %s", test)
-	t.Log("Expected result: 'Database: {Type:<type> User:<user> Pass:<pass> Name:<name> OffsetTable:<table> OffsetColumn:<column>}'")
-
-	var result = GetSettings(test)
-	t.Logf("Result: DataBase: %+v", result.DataBase)
+func TestGetGlobalSettingsKO(t *testing.T) {
+	_, err := newConfig(mockHandler{})
+	if err == nil {
+		t.Error("ERROR :: Void environment variable did not trigger an error")
+	}
 }
