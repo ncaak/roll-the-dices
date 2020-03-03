@@ -10,14 +10,27 @@ import (
 	"log"
 )
 
+const COMMAND_UNKNOWN = "El comando recibido es erróneo.\nCompruebe la /ayuda"
+const PARAMETERS_ERROR = "El comando no acepta los datos introducidos.\nCompruebe la /ayuda"
+
+func panicOnError(err error) {
+	if err != nil {
+		log.Printf("[ERR] %s", err.Error())
+		panic(err)
+	}
+}
+
 func main() {
 	log.Println("[INF] Beginning routine")
 
-	var settings = config.GetSettings()
-	var db = storage.Init(settings.DataBase)
+	var settings, errConf = config.GetSettings()
+	panicOnError(errConf)
+
+	var db, errDB = storage.Init(settings)
+	panicOnError(errDB)
 	defer db.Close()
 
-	var api = request.Init(settings.Api)
+	var api = request.Init(settings)
 	var updates = api.GetUpdates(db.GetOffset())
 
 	for _, update := range updates {
@@ -26,12 +39,14 @@ func main() {
 			cmd, err := command.GetValidatedCommandOrError(update.Message)
 			if err != nil {
 				log.Println("[WRN] " + err.Error())
-
-			} else {
-				errCmd := cmd.Run(api)
-				if errCmd != nil {
-					log.Println("[ERR] " + errCmd.Error())
-				}
+				command.SendErrorReply(update.Message, api, COMMAND_UNKNOWN)
+				continue
+			}
+			
+			errOnRun := cmd.Run(api)
+			if errOnRun != nil {
+				log.Println("[ERR] " + errOnRun.Error())
+				command.SendErrorReply(update.Message, api, PARAMETERS_ERROR)
 			}
 
 		} else if update.IsCallback() {

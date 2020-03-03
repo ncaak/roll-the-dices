@@ -4,7 +4,12 @@ import (
 	"strings"
 )
 
-const DEFAULT_HELP = "Especifica el comando para el que necesitas ayuda\n_Ejemplo:_\n'/ayuda *tira*'"
+const DEFAULT_HELP = `
+Especifica el comando para el que necesitas ayuda.
+Comandos actualmente activos: /tira, /v, /dv, /t, /agrupa, /repite, /ayuda
+_Ejemplo:_
+'/ayuda *tira*'
+`
 
 func getHelp(command string) (help string) {
 	switch strings.TrimSpace(command) {

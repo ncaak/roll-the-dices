@@ -5,29 +5,45 @@ import (
 	"testing"
 )
 
-// Tests basic open and close database
-func TestStorageBasic(t *testing.T) {
-	var test = "ENV_DEV"
-	var settings = config.GetSettings(test)
-	t.Logf("Test database configuration for environment: %s", test)
-	var db = Init(settings.DataBase)
-	// Pings the opened database to check if everything was fine
-	if err := db.core.Ping(); err != nil {
-		t.Errorf("ERROR :: Cannot connect with database")
+/*
+ * Mocks
+ */
+type mockSettings struct{}
+
+func (s mockSettings) GetUserCred() string { return "" }
+func (s mockSettings) GetDBAccess() string { return "" }
+
+/*
+ * Tests
+ */
+func initDB(t *testing.T) dBase {
+	settings, _ := config.GetSettings()
+	db, err := Init(settings)
+	if err != nil {
+		t.Errorf("ERROR :: %s", err)
 	}
-	db.Close()
-	t.Logf("Result: Conexion with the database was correct")
+	return db
 }
 
-// Tests basic open, retrieve a data, and close database afterwards
-func TestStorageRetrieve(t *testing.T) {
-	var test = "ENV_DEV"
-	var settings = config.GetSettings(test)
-	t.Logf("Test database configuration for environment: %s", test)
-	t.Log("Expected result: 'd1' type(d1) = int")
-	var db = Init(settings.DataBase)
-	// Retrieves offset value from the database
-	var result = db.GetOffset()
-	db.Close()
-	t.Logf("Result: Offset retrieved: %d", result)
+func TestInitiationOK(t *testing.T) {
+	var db = initDB(t)
+	defer db.Close()
+	if errPing := db.core.Ping(); errPing != nil {
+		t.Errorf("ERROR :: %s", errPing)
+	}
+}
+
+func TestInitiationKO(t *testing.T) {
+	db, _ := Init(mockSettings{})
+	if err := db.core.Ping(); err == nil {
+		t.Error("ERROR :: Connection with database not failed")
+	}
+}
+
+func TestQueryGetOffsetOK(t *testing.T) {
+	var db = initDB(t)
+	defer db.Close()
+	if db.GetOffset() == 0 {
+		t.Error("ERROR :: Query failed and returned a 0 value")
+	}
 }

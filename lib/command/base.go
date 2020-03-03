@@ -77,8 +77,15 @@ func GetValidatedCommandOrError(input Source) (baseCommand, error) {
 	if len(match) == 0 {
 		return baseCommand{}, fmt.Errorf("Received command is not valid")
 	}
+
 	var command = getBaseCommand(match[1], match[2])
 	command.source = input
 
 	return command, nil
+}
+
+func SendErrorReply(input Source, api Request, err string) {
+	var errCommand = NewError(err)
+	errCommand.source = input
+	errCommand.Run(api)
 }

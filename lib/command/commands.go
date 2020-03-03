@@ -5,6 +5,16 @@ import (
 )
 
 /*
+ * Auxiliar functions to improve readability
+ */
+func returnStringOnResolve(message string) func() (string,error) {
+	return func() (string, error) { return message, nil }
+}
+func returnRollOnResolve(s string, e error) func() (string,error) {
+	return func() (string, error) { return s, e }
+}
+
+/*
  * Mutable functionalities
  * It adds polymorphism for the different commands
  */
@@ -34,43 +44,49 @@ func sendMarkdownReply() func(Request, Source, string) {
  */
 
 func NewTira(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.Roll(arg, "1d20") }
+	c.resolve = returnRollOnResolve(dice.Roll(arg, "1d20"))
 	c.send = sendBasicReply()
 	return
 }
 
 func NewV(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.Roll(arg, "h2d20") }
+	c.resolve = returnRollOnResolve(dice.Roll(arg, "h2d20"))
 	c.send = sendBasicReply()
 	return
 }
 
 func NewDv(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.Roll(arg, "l2d20") }
+	c.resolve = returnRollOnResolve(dice.Roll(arg, "l2d20"))
 	c.send = sendBasicReply()
 	return
 }
 
 func NewT(_ string) (c baseCommand) {
-	c.resolve = func() (string, error) { return "", nil }
+	c.resolve = returnStringOnResolve("")
 	c.send = sendKeyboard()
 	return
 }
 
 func NewAgrupa(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.Distribute(arg) }
+	c.resolve = returnRollOnResolve(dice.Distribute(arg))
 	c.send = sendMarkdownReply()
 	return
 }
 
 func NewAyuda(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return getHelp(arg), nil }
+	c.resolve = returnStringOnResolve(getHelp(arg))
 	c.send = sendMarkdownReply()
 	return
 }
 
 func NewRepite(arg string) (c baseCommand) {
-	c.resolve = func() (string, error) { return dice.Repeat(arg) }
+	c.resolve = returnRollOnResolve(dice.Repeat(arg))
 	c.send = sendBasicReply()
+	return
+}
+
+func NewError(message string) (c baseCommand) {
+	c.resolve = returnStringOnResolve(message)
+	c.send = sendMarkdownReply()
 	return
 }

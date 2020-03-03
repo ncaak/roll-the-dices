@@ -4,42 +4,29 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/ncaak/roll-the-dices/lib/config"
 	"log"
 )
 
 const DRIVER = "mysql"
 
-// Structures to handle operations with database
-type defaultDB struct {
-	table  string
-	column string
-}
-
-type dataBase struct {
-	core   *sql.DB
-	offset defaultDB
-}
-
 // Initialize database opening it and saving settings retrieved from argument
-func Init(dbconf config.DB) dataBase {
+func Init(cfg settings) (dBase, error) {
 	// Opening the database allowing to send queries
-	db, err := sql.Open(DRIVER, fmt.Sprintf("%s@%s", dbconf.Credentials, dbconf.Access))
+	db, err := sql.Open(DRIVER, fmt.Sprintf("%s@%s", cfg.GetUserCred(), cfg.GetDBAccess()))
 	if err != nil {
-		log.Println("[ERR] Connection with database failed")
-		panic(err.Error())
+		return dBase{}, err
 	}
-	return dataBase{db, defineDB()}
+	return dBase{db, defineDB()}, nil
 }
 
 // Close database operations
-func (db *dataBase) Close() {
+func (db dBase) Close() {
 	db.core.Close()
 }
 
 // Non exported function to send the queries to database
-func (db *dataBase) query(queryString string) *sql.Rows {
-	rows, err := db.core.Query(queryString)
+func (db dBase) query(q string) *sql.Rows {
+	rows, err := db.core.Query(q)
 	if err != nil {
 		log.Println("[ERR] Query to database failed")
 		panic(err.Error())
