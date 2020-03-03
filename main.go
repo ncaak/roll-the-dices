@@ -10,6 +10,9 @@ import (
 	"log"
 )
 
+const COMMAND_UNKNOWN = "El comando recibido es erróneo.\nCompruebe la /ayuda"
+const PARAMETERS_ERROR = "El comando no acepta los datos introducidos.\nCompruebe la /ayuda"
+
 func panicOnError(err error) {
 	if err != nil {
 		log.Printf("[ERR] %s", err.Error())
@@ -36,12 +39,14 @@ func main() {
 			cmd, err := command.GetValidatedCommandOrError(update.Message)
 			if err != nil {
 				log.Println("[WRN] " + err.Error())
-
-			} else {
-				errCmd := cmd.Run(api)
-				if errCmd != nil {
-					log.Println("[ERR] " + errCmd.Error())
-				}
+				command.SendErrorReply(update.Message, api, COMMAND_UNKNOWN)
+				continue
+			}
+			
+			errOnRun := cmd.Run(api)
+			if errOnRun != nil {
+				log.Println("[ERR] " + errOnRun.Error())
+				command.SendErrorReply(update.Message, api, PARAMETERS_ERROR)
 			}
 
 		} else if update.IsCallback() {
