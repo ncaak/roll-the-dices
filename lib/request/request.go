@@ -38,9 +38,14 @@ func (api core) BasicReply(chatId int, replyId int, text string) {
 	api.post("sendMessage", structs.InitBasicReply(chatId, replyId, text))
 }
 
-// Sends an unformatted reply with a Inline Keyboard parsed within
-func (api core) KeyboardReply(chatId int, replyId int) {
-	api.post("sendMessage", structs.InitKeyboard(chatId, replyId))
+// Sends an inline keyboard for different character types
+func (api core) CharKeyboardReply(chatId int, replyId int) {
+	api.post("sendMessage", structs.InitCharKeyboard(chatId, replyId))
+}
+
+// Sends an inline keyboard for different basic die rolls
+func (api core) DiceKeyboardReply(chatId int, replyId int) {
+	api.post("sendMessage", structs.InitDiceKeyboard(chatId, replyId))
 }
 
 // Sends a markdown formatted reply

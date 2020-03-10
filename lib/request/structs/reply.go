@@ -6,7 +6,6 @@ import (
 )
 
 const MARKDOWN = "MarkDown"
-const KBD_MSG = "Escoge un dado para lanzar"
 
 // Reply structures are used in SendMessage requests
 type Reply struct {
@@ -36,10 +35,18 @@ func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
 	return r.encode()
 }
 
-// Returns a reply with an inline keyboard
-func InitKeyboard(chatId int, replyId int) *bytes.Buffer {
+// Returns a reply with an inline character keyboard
+func InitCharKeyboard(chatId int, replyId int) *bytes.Buffer {
 	var r = getBaseReply(chatId, replyId)
-	r.Text = KBD_MSG
+	r.Text = "Escoge un tipo de plantilla"
+	r.Markup = NewCharKeyboard()
+	return r.encode()
+}
+
+// Returns a reply with an inline dice keyboard
+func InitDiceKeyboard(chatId int, replyId int) *bytes.Buffer {
+	var r = getBaseReply(chatId, replyId)
+	r.Text = "Escoge un dado para lanzar"
 	r.Markup = NewDiceKeyboard()
 	return r.encode()
 }
