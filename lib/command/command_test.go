@@ -10,7 +10,8 @@ import (
 type mockRequest struct{}
 
 func (r mockRequest) BasicReply(a int, b int, c string)    {}
-func (r mockRequest) KeyboardReply(a int, b int)           {}
+func (r mockRequest) DiceKeyboardReply(a int, b int)           {}
+func (r mockRequest) CharKeyboardReply(a int, b int)           {}
 func (r mockRequest) MarkdownReply(a int, b int, c string) {}
 
 type mockSource struct {

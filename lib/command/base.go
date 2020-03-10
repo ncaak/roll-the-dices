@@ -13,7 +13,8 @@ import (
  */
 type Request interface {
 	BasicReply(int, int, string)
-	KeyboardReply(int, int)
+	CharKeyboardReply(int, int)
+	DiceKeyboardReply(int, int)
 	MarkdownReply(int, int, string)
 }
 type Source interface {
@@ -46,7 +47,7 @@ func (c baseCommand) Run(api Request) error {
  * Validators and Initializers orchestrator
  */
 func validCommands() string {
-	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda", "repite"}
+	var VALID_COMMANDS = [...]string{"tira", "v", "dv", "t", "agrupa", "ayuda", "repite", "pj"}
 	return fmt.Sprintf(`/(%s)(\s.*)?$`, strings.Join(VALID_COMMANDS[:], "|"))
 }
 
@@ -60,13 +61,15 @@ func getBaseCommand(inputCmd string, arg string) (cmd baseCommand) {
 	case "dv":
 		cmd = NewDv(argument)
 	case "t":
-		cmd = NewT(argument)
+		cmd = NewT()
 	case "agrupa":
 		cmd = NewAgrupa(argument)
 	case "ayuda":
 		cmd = NewAyuda(argument)
 	case "repite":
 		cmd = NewRepite(argument)
+	case "pj":
+		cmd = NewPj()
 	}
 	return cmd
 }

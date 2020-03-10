@@ -26,9 +26,15 @@ func sendBasicReply() func(Request, Source, string) {
 	}
 }
 
-func sendKeyboard() func(Request, Source, string) {
+func sendDiceKeyboard() func(Request, Source, string) {
 	return func(api Request, source Source, _ string) {
-		api.KeyboardReply(source.GetChatId(), source.GetReplyId())
+		api.DiceKeyboardReply(source.GetChatId(), source.GetReplyId())
+	}
+}
+
+func sendCharKeyboard() func(Request, Source, string) {
+	return func(api Request, source Source, _ string) {
+		api.CharKeyboardReply(source.GetChatId(), source.GetReplyId())
 	}
 }
 
@@ -61,9 +67,9 @@ func NewDv(arg string) (c baseCommand) {
 	return
 }
 
-func NewT(_ string) (c baseCommand) {
+func NewT() (c baseCommand) {
 	c.resolve = returnStringOnResolve("")
-	c.send = sendKeyboard()
+	c.send = sendDiceKeyboard()
 	return
 }
 
@@ -82,6 +88,12 @@ func NewAyuda(arg string) (c baseCommand) {
 func NewRepite(arg string) (c baseCommand) {
 	c.resolve = returnRollOnResolve(dice.Repeat(arg))
 	c.send = sendBasicReply()
+	return
+}
+
+func NewPj() (c baseCommand) {
+	c.resolve = returnStringOnResolve("")
+	c.send = sendCharKeyboard()
 	return
 }
 
