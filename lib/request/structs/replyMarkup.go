@@ -16,10 +16,9 @@ type ReplyMarkup struct {
 // Initializers
 
 // Returns an edit reply message
-func InitEditMarkupReply(m Msg, text string) *bytes.Buffer {
-	return ReplyMarkup{m.GetChatId(), m.GetReplyId(), text, ""}.encode()
+func InitEditMarkupReply(chatId int, replyId int, text string) *bytes.Buffer {
+	return ReplyMarkup{chatId, replyId, text, ""}.encode()
 }
-
 // Auxiliar methods
 
 // Auxiliar function to encode a structure and returning a buffer suited to be sent in a request

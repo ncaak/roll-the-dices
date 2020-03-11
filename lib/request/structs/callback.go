@@ -35,6 +35,11 @@ func (cb Callback) GetChatId() int {
 	return cb.Message.Chat.Id
 }
 
+// Returns callback data set into the inline keyboard key
+func (cb Callback) GetCommand() string {
+	return cb.Data
+}
+
 // Returning source Message identifier to send the reply to the original sender
 func (cb Callback) GetReplyId() int {
 	return cb.Message.MessageId

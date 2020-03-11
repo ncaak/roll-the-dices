@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ncaak/roll-the-dices/lib/command"
 	"github.com/ncaak/roll-the-dices/lib/config"
-	"github.com/ncaak/roll-the-dices/lib/dice"
 	"github.com/ncaak/roll-the-dices/lib/request"
 	"github.com/ncaak/roll-the-dices/lib/storage"
 	"log"
@@ -51,8 +50,7 @@ func main() {
 
 		} else if update.IsCallback() {
 			// A callback is triggered when someone clicks an inline keyboard
-			var roll, _ = dice.Roll(update.Callback.Data, "1d20")
-			api.EditKeyboardReply(update.Callback, roll)
+			command.SendCallbackReply(update.Callback, api)
 		}
 	}
 

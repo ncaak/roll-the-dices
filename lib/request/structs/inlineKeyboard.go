@@ -54,7 +54,7 @@ func getDiceKeys() (r row) {
 	var options = [...]string{"1d100", "1d20", "1d12", "1d10", "1d8", "1d6", "1d4", "1d3"}
 	
 	for _, die := range options {
-		r = append(r, key{die, die})
+		r = append(r, key{die, "/tira " + die})
 	}
 	return
 }

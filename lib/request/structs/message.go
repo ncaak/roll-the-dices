@@ -1,11 +1,5 @@
 package structs
 
-// Interface for structs containing message information needed to send API requests
-type Msg interface {
-	GetChatId() int
-	GetReplyId() int
-}
-
 // Message structures find in Callback and Result structures
 //
 // Message
