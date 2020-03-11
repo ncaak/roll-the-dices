@@ -15,6 +15,7 @@ type Request interface {
 	BasicReply(int, int, string)
 	CharKeyboardReply(int, int)
 	DiceKeyboardReply(int, int)
+	EditKeyboardReply(int, int, string)
 	MarkdownReply(int, int, string)
 }
 type Source interface {
@@ -91,4 +92,11 @@ func SendErrorReply(input Source, api Request, err string) {
 	var errCommand = NewError(err)
 	errCommand.source = input
 	errCommand.Run(api)
+}
+
+func SendCallbackReply(cb Source, api Request) {
+	var cmd, _ = GetValidatedCommandOrError(cb)
+	var roll, _ = cmd.resolve()
+
+	api.EditKeyboardReply(cb.GetChatId(), cb.GetReplyId(), roll)
 }
