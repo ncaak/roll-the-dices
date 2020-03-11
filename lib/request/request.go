@@ -27,10 +27,9 @@ func (api core) GetUpdates(offset int) []structs.Result {
  * Chat Id and Reply Id are necessary if the message sent has to be linked to a previous existing message
  */
 
-// Sends a POST request to server to edit a message with a keyboard to remove it
-// message - Structure with the required fields to send the reply like Chat and Message indentifier
-func (api core) EditKeyboardReply(msg structs.Msg, text string) {
-	api.post("editMessageText", structs.InitEditMarkupReply(msg, text))
+// Sends a reply to edit a previous message
+func (api core) EditKeyboardReply(chatId int, replyId int, text string) {
+	api.post("editMessageText", structs.InitEditMarkupReply(chatId, replyId, text))
 }
 
 // Sends an unformatted basic reply
