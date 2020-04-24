@@ -37,14 +37,13 @@ func (api core) BasicReply(chatId int, replyId int, text string) {
 	api.post("sendMessage", structs.InitBasicReply(chatId, replyId, text))
 }
 
-// Sends an inline keyboard for different character types
-func (api core) CharKeyboardReply(chatId int, replyId int) {
-	api.post("sendMessage", structs.InitCharKeyboard(chatId, replyId))
-}
-
 // Sends an inline keyboard for different basic die rolls
 func (api core) DiceKeyboardReply(chatId int, replyId int) {
 	api.post("sendMessage", structs.InitDiceKeyboard(chatId, replyId))
+}
+
+func (api core) KeyboardReply(chatId int, replyId int, buttons map[string]string) {
+	api.post("sendMessage", structs.InitKeyboard(chatId, replyId, buttons))
 }
 
 // Sends a markdown formatted reply

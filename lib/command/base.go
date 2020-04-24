@@ -13,9 +13,9 @@ import (
  */
 type Request interface {
 	BasicReply(int, int, string)
-	CharKeyboardReply(int, int)
 	DiceKeyboardReply(int, int)
 	EditKeyboardReply(int, int, string)
+	KeyboardReply(int, int, map[string]string)
 	MarkdownReply(int, int, string)
 }
 type Source interface {

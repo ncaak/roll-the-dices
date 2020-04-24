@@ -34,7 +34,10 @@ func sendDiceKeyboard() func(Request, Source, string) {
 
 func sendCharKeyboard() func(Request, Source, string) {
 	return func(api Request, source Source, _ string) {
-		api.CharKeyboardReply(source.GetChatId(), source.GetReplyId())
+		btn := make(map[string]string)
+		btn["dnd"] = "/repite 6 3h4d6"
+		btn["cthulhu"] = "/tira"
+		api.KeyboardReply(source.GetChatId(), source.GetReplyId(), btn)
 	}
 }
 
@@ -46,6 +49,7 @@ func sendMarkdownReply() func(Request, Source, string) {
 
 /*
  * Commands initializers
+ p
  * Each one sets the functions needed for the command to work
  */
 

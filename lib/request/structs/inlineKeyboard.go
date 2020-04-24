@@ -39,9 +39,14 @@ func NewDiceKeyboard() string {
 	return string(js)
 }
 
-// Returns a complete inline keyboard with the char options available (not needed to be packed yet)
-func NewCharKeyboard() string {
-	js, _ := json.Marshal(inlineKeyboard{[]row{getCharKeys()}})
+func NewKeyboard(buttons map[string]string) string {
+	var r = row{}
+
+	for k, v := range buttons {
+		r = append(r, key{k, v})
+	}
+
+	js, _ := json.Marshal(inlineKeyboard{[]row{r}})
 	return string(js)
 }
 
@@ -55,16 +60,6 @@ func getDiceKeys() (r row) {
 	
 	for _, die := range options {
 		r = append(r, key{die, "/tira " + die})
-	}
-	return
-}
-
-// GEnerates keys for char types options
-func getCharKeys() (r row) {
-	var options = [...]string{"dnd", "cthulhu"}
-	
-	for _, char := range options {
-		r = append(r, key{char, char})
 	}
 	return
 }

@@ -11,8 +11,8 @@ type mockRequest struct{}
 
 func (r mockRequest) BasicReply(a int, b int, c string)    {}
 func (r mockRequest) DiceKeyboardReply(a int, b int)           {}
+func (r mockRequest) KeyboardReply(int, int, map[string]string) {}
 func (r mockRequest) EditKeyboardReply(a int, b int, c string) {}
-func (r mockRequest) CharKeyboardReply(a int, b int)           {}
 func (r mockRequest) MarkdownReply(a int, b int, c string) {}
 
 type mockSource struct {
@@ -52,6 +52,7 @@ func TestValidCommandOK(t *testing.T) {
 	mockValidation(t, "agrupa")
 	mockValidation(t, "ayuda")
 	mockValidation(t, "repite")
+	mockValidation(t, "pj")
 }
 
 func TestValidCommandKO(t *testing.T) {

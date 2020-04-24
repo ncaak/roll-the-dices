@@ -35,19 +35,18 @@ func InitBasicReply(chatId int, replyId int, text string) *bytes.Buffer {
 	return r.encode()
 }
 
-// Returns a reply with an inline character keyboard
-func InitCharKeyboard(chatId int, replyId int) *bytes.Buffer {
-	var r = getBaseReply(chatId, replyId)
-	r.Text = "Escoge un tipo de plantilla"
-	r.Markup = NewCharKeyboard()
-	return r.encode()
-}
-
 // Returns a reply with an inline dice keyboard
 func InitDiceKeyboard(chatId int, replyId int) *bytes.Buffer {
 	var r = getBaseReply(chatId, replyId)
 	r.Text = "Escoge un dado para lanzar"
 	r.Markup = NewDiceKeyboard()
+	return r.encode()
+}
+
+func InitKeyboard(chatId int, replyId int, buttons map[string]string) *bytes.Buffer {
+	var r = getBaseReply(chatId, replyId)
+	r.Text = "TBD"
+	r.Markup = NewKeyboard(buttons)
 	return r.encode()
 }
 
